@@ -9,108 +9,112 @@ import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.util.LoggingUtil;
 
-@TeleOp(name = "Test Arm Encode")
+@TeleOp(name = "Test Arm Encoders")
 public class Test_Arm_Encode extends LinearOpMode {
     private DcMotor lowarm1;
     private DcMotor lowarm2;
     private DcMotor middlearm;
 
-    public int lowarmm1 = 0;
-    public int lowarmm2 = 0;
-    public int Marm = 0;
-    public int tlowarmm1 = 0;
-    public int tlowarmm2 = 0;
-    public int tMarm = 0;
+    private int lowArm1Value = 0;
+    private int lowArm2Value = 0;
+    private int middleArmValue = 0;
+    private int tLowArm1Value = 0;
+    private int tLowArm2Value = 0;
+    private int tMiddleArmValue = 0;
 
-
-
-    /**
-     * This function is executed when this Op Mode is selected from the Driver Station.
-     */
+    private final ElapsedTime timer = new ElapsedTime();
+    private final double INCREMENT_INTERVAL_MILLISECONDS = 1000;
 
     @Override
-
-
     public void runOpMode() {
-        lowarm1 = hardwareMap.get(DcMotor.class, "arm1");
-        lowarm2 = hardwareMap.get(DcMotor.class, "arm2");
-        middlearm = hardwareMap.get(DcMotor.class, "arm3");
-        lowarm1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        lowarm2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        middlearm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        lowarm1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        lowarm2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        middlearm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        lowArm1 = hardwareMap.get(DcMotor.class, "arm1");
+        lowArm2 = hardwareMap.get(DcMotor.class, "arm2");
+        middleArm = hardwareMap.get(DcMotor.class, "arm3");
+
+        // Set encoder modes and zero power behavior
+        lowArm1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        lowArm2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        middleArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        lowArm1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        lowArm2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        middleArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        lowArm1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        lowArm2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        middleArm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        lowArm1Value = lowArm1.getCurrentPosition();
+        lowArm2Value = lowArm2.getCurrentPosition();
+        middleArmValue = middleArm.getCurrentPosition();
+
         waitForStart();
         if (opModeIsActive()) {
+            timer.reset();
             while (opModeIsActive()) {
-                if (gamepad2.y) {
-                    if (Marm != tMarm) {
-                        Marm = middlearm.getCurrentPosition();
-                        tMarm = Marm;
+                middleArmValue = middleArm.getCurrentPosition();
+                lowArm1Value = lowArm1.getCurrentPosition();
+                lowArm2Value = lowArm2.getCurrentPosition();
+
+                // Middle Arm Controls
+                if (timer.seconds() >= INCREMENT_INTERVAL_MILLISECONDS) {
+                    if (gamepad2.y || gamepad2.a) {
+                        tMiddleArmValue += gamepad2.y ? 1 : 0; // Increment if Y is pressed
+                        tMiddleArmValue -= gamepad2.a ? 1 : 0; // Decrement if A is pressed
+                        middleArm.setTargetPosition(tMiddleArmValue);
                     }
-                    Marm ++;
-                    middlearm.setTargetPosition(Marm);
-                    middlearm.setPower(0.5);
-                } else if (gamepad2.a) {
-                    if (Marm != tMarm) {
-                        Marm = middlearm.getCurrentPosition();
-                        tMarm = Marm;
+                    if (gamepad2.dpad_up || gamepad2.dpad_down) {
+                        tLowArm1Value += gamepad2.dpad_up ? 1 : 0; // Increment if Up is pressed
+                        tLowArm1Value -= gamepad2.dpad_down ? 1 : 0; // Decrement if Down is pressed
+                        tLowArm2Value += gamepad2.dpad_up ? 1 : 0; // Increment if Up is pressed
+                        tLowArm2Value -= gamepad2.dpad_down ? 1 : 0; // Decrement if Down is pressed
+                        lowArm1.setTargetPosition(tLowArm1Value);
+                        lowArm2.setTargetPosition(tLowArm2Value);
                     }
-                    Marm --;
-                    middlearm.setTargetPosition(Marm);
-                    middlearm.setPower(-0.5);
-                } else {
-                    middlearm.setTargetPosition(Marm);
-                    middlearm.setPower(0.1);
-                }
-                
-                if (gamepad2.dpad_up) {
-                    if (lowarmm1 != tlowarmm1) {
-                        lowarmm1 = lowarm1.getCurrentPosition();
-                        tlowarmm1 = lowarmm1;
-                    }
-                    lowarmm1 ++;
-                    if (lowarmm2 != tlowarmm2) {
-                        lowarmm2 = lowarm2.getCurrentPosition();
-                        tlowarmm2 = lowarmm2;
-                    }
-                    lowarmm2 ++;
-                    lowarm1.setTargetPosition(lowarmm1);
-                    lowarm2.setTargetPosition(lowarmm2);
-                    lowarm1.setPower(0.5);
-                    lowarm2.setPower(0.5);
-                } else if (gamepad2.dpad_down) {
-                    if (lowarmm1 != tlowarmm1) {
-                        lowarmm1 = lowarm1.getCurrentPosition();
-                        tlowarmm1 = lowarmm1;
-                    }
-                    lowarmm1 --;
-                    if (lowarmm2 != tlowarmm2) {
-                        lowarmm2 = lowarm2.getCurrentPosition();
-                        tlowarmm2 = lowarmm2;
-                    }
-                    lowarmm2 --;
-                    lowarm1.setTargetPosition(lowarmm1);
-                    lowarm2.setTargetPosition(lowarmm2);
-                    lowarm1.setPower(-0.5);
-                    lowarm2.setPower(-0.5);
-                } else {
-                    lowarm1.setTargetPosition(lowarmm1);
-                    lowarm2.setTargetPosition(lowarmm2);
-                    lowarm1.setPower(0.1);
-                    lowarm2.setPower(0.1);
+                    timer.reset();
                 }
 
+                if (middleArmValue > tMiddleArmValue) {
+                    middleArm.setPower(-0.5);
+                } else if (middleArmValue < tMiddleArmValue) {
+                    middleArm.setPower(0.5);
+                } else {
+                    middleArm.setPower(0);
+                }
+
+                if (lowArm1Value > tLowArm1Value) {
+                    lowArm1.setPower(-0.5);
+                } else if (lowArm1Value < tLowArm1Value) {
+                    lowArm1.setPower(0.5);
+                } else {
+                    lowArm1.setPower(0);
+                }
+
+                if (lowArm2Value > tLowArm2Value) {
+                    lowArm2.setPower(-0.5);
+                } else if (lowArm2Value < tLowArm2Value) {
+                    lowArm2.setPower(0.5);
+                } else {
+                    lowArm2.setPower(0);
+                }
+
+                // Stop all motors if button B is pressed
                 if (gamepad2.b) {
-                    middlearm.setPower(0);
-                    lowarm1.setPower(0);
-                    lowarm2.setPower(0);
+                    middleArm.setPower(0);
+                    lowArm1.setPower(0);
+                    lowArm2.setPower(0);
+                    middleArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                    lowArm1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                    lowArm2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                } else {
+                    middleArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    lowArm1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    lowArm2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 }
 
-                telemetry.addData("Low Arm 1", lowarm1.getCurrentPosition());
-                telemetry.addData("Low Arm 2", lowarm2.getCurrentPosition());
-                telemetry.addData("Middle Arm 1", middlearm.getCurrentPosition());
+                telemetry.addData("Low Arm 1", lowArm1Value);
+                telemetry.addData("Low Arm 2", lowArm2Value);
+                telemetry.addData("Middle Arm 1", middleArmValue);
                 telemetry.update();
             }
         }

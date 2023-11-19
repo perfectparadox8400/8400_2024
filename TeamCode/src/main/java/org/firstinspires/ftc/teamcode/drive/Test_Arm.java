@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.util.RobotLog;
 import org.firstinspires.ftc.teamcode.util.LoggingUtil;
 
 //WE NEED TO PUSH THIS CODE TO THE BOT AUGHGHGHGH
-@TeleOp(name = "Test Arm No Encode")
+@TeleOp(name = "Test Arm By Power")
 public class Test_Arm extends LinearOpMode {
     private DcMotor lowarm1;
     private DcMotor lowarm2;
