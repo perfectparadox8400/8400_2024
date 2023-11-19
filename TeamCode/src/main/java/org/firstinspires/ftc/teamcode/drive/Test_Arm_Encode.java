@@ -57,7 +57,7 @@ public class Test_Arm_Encode extends LinearOpMode {
                 lowArm2Value = lowArm2.getCurrentPosition();
 
                 // Middle Arm Controls
-                if (timer.seconds() >= INCREMENT_INTERVAL_MILLISECONDS) {
+                if (timer.milliseconds() >= INCREMENT_INTERVAL_MILLISECONDS) {
                     if (gamepad2.y || gamepad2.a) {
                         tMiddleArmValue += gamepad2.y ? 1 : 0; // Increment if Y is pressed
                         tMiddleArmValue -= gamepad2.a ? 1 : 0; // Decrement if A is pressed
