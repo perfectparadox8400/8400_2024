@@ -74,30 +74,6 @@ public class Test_Arm_Encode extends LinearOpMode {
                     timer.reset();
                 }
 
-                if (middleArmValue > tMiddleArmValue) {
-                    middleArm.setPower(-0.5);
-                } else if (middleArmValue < tMiddleArmValue) {
-                    middleArm.setPower(0.5);
-                } else {
-                    middleArm.setPower(0);
-                }
-
-                if (lowArm1Value > tLowArm1Value) {
-                    lowArm1.setPower(-0.5);
-                } else if (lowArm1Value < tLowArm1Value) {
-                    lowArm1.setPower(0.5);
-                } else {
-                    lowArm1.setPower(0);
-                }
-
-                if (lowArm2Value > tLowArm2Value) {
-                    lowArm2.setPower(-0.5);
-                } else if (lowArm2Value < tLowArm2Value) {
-                    lowArm2.setPower(0.5);
-                } else {
-                    lowArm2.setPower(0);
-                }
-
                 // Stop all motors if button B is pressed
                 if (gamepad2.b) {
                     middleArm.setPower(0);
