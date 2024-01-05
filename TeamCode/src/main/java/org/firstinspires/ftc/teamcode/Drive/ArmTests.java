@@ -27,9 +27,9 @@ public class ArmTests extends LinearOpMode {
         lowarm1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lowarm2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         middlearm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        lowarm1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        lowarm2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        middlearm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        lowarm1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        lowarm2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        middlearm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         int target = 0;
         int error = 0;
         int last_error;
