@@ -30,6 +30,9 @@ public class ArmTests extends LinearOpMode {
         lowarm1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         lowarm2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         middlearm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        lowarm1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        lowarm2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        middlearm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         int target = 0;
         int error = 0;
         int last_error;
@@ -60,9 +63,9 @@ public class ArmTests extends LinearOpMode {
                 }
 */
                 if (gamepad2.dpad_up) {
-                    target += 1;
-                } else if (gamepad2.dpad_down) {
                     target -= 1;
+                } else if (gamepad2.dpad_down) {
+                    target += 1;
                 }
 
                 if (gamepad2.y) {
@@ -91,7 +94,7 @@ public class ArmTests extends LinearOpMode {
 
                 lowarm2.setPower(power);
                 lowarm1.setPower(power);
-                //middlearm.setPower(-mpower);
+                middlearm.setPower(-mpower);
                 //elbow.setPosition(pelbow);
 
                 telemetry.addData("Low Arm 1", lowarm1.getCurrentPosition());
