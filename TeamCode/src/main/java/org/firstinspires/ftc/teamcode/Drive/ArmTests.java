@@ -7,32 +7,28 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp(name = "Arm Testing")
 public class ArmTests extends LinearOpMode {
-    private DcMotor lowarm1;
-    private DcMotor lowarm2;
-    private DcMotor middlearm;
-    private Servo elbow;
-
-
-
-    /**
-     * This function is executed when this Op Mode is selected from the Driver Station.
-     */
+    private DcMotor arm1;
+    private DcMotor arm2;
+    private DcMotor elbow;
+    private Servo wrist;
+    private Servo hand;
 
     @Override
     public void runOpMode() {
-        lowarm1 = hardwareMap.get(DcMotor.class, "arm1");
-        lowarm2 = hardwareMap.get(DcMotor.class, "arm2");
-        middlearm = hardwareMap.get(DcMotor.class, "arm3");
-        elbow = hardwareMap.get(Servo.class, "elbow");
-        lowarm1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        lowarm2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        middlearm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        lowarm1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        lowarm2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        middlearm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        lowarm1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        lowarm2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        middlearm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        arm1 = hardwareMap.get(DcMotor.class, "arm1");
+        arm2 = hardwareMap.get(DcMotor.class, "arm2");
+        elbow = hardwareMap.get(DcMotor.class, "arm3");
+        wrist = hardwareMap.get(Servo.class, "wrist");
+        hand = hardwareMap.get(Servo.class, "hand");
+        arm1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        arm2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        elbow.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        arm1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        arm2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        elbow.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        arm1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        arm2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        elbow.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         int target = 0;
         int error = 0;
         int last_error;
@@ -40,6 +36,7 @@ public class ArmTests extends LinearOpMode {
         double kp = .1;
         double kd = .1;
         double power;
+
         int mtarget = 0;
         int merror = 0;
         int mlast_error;
@@ -48,20 +45,12 @@ public class ArmTests extends LinearOpMode {
         double mkd = .1;
         double mpower;
 
-        double pelbow = 0;
+        double pwrist = 0;
+        double phand = 0;
 
         waitForStart();
         if (opModeIsActive()) {
-            while (opModeIsActive()) {
-                /*
-                if (target >= 150)  {
-                    target = 150;
-                }
-
-                if (target <= -5) {
-                    target = -5;
-                }
-*/
+            while (opModeIsActive()) {\
                 if (gamepad2.dpad_up) {
                     target -= 1;
                 } else if (gamepad2.dpad_down) {
@@ -75,16 +64,22 @@ public class ArmTests extends LinearOpMode {
                 }
 
                 if (gamepad2.x) {
-                    pelbow += 0.1;
+                    pwrist = 0;
                 } else if (gamepad2.b) {
-                    pelbow -= 0.1;
+                    pwrist = 1;
+                }
+
+                if (gamepad2.left_bumper) {
+                    phand = 0;
+                } else if (gamepad2.right_bumper) {
+                    phand = 1;
                 }
 
                 last_error = error;
                 mlast_error = merror;
 
-                error = target - lowarm2.getCurrentPosition();
-                merror = mtarget - middlearm.getCurrentPosition();
+                error = target - arm1.getCurrentPosition();
+                merror = mtarget - elbow.getCurrentPosition();
 
                 d_error = error - last_error;
                 md_error = merror - mlast_error;
@@ -92,14 +87,15 @@ public class ArmTests extends LinearOpMode {
                 power = ((kp*error) + (kd*d_error));
                 mpower = ((mkp*merror) + (mkd*md_error));
 
-                lowarm2.setPower(power);
-                lowarm1.setPower(power);
-                middlearm.setPower(-mpower);
-                //elbow.setPosition(pelbow);
+                arm1.setPower(power);
+                arm2.setPower(power);
+                elbow.setPower(-mpower);
+                wrist.setPosition(pwrist);
+                hand.setPosition(phand);
 
-                telemetry.addData("Low Arm 1", lowarm1.getCurrentPosition());
-                telemetry.addData("Low Arm 2", lowarm2.getCurrentPosition());
-                telemetry.addData("Middle Arm 1", middlearm.getCurrentPosition());
+                telemetry.addData("Arm 1", arm1.getCurrentPosition());
+                telemetry.addData("Arm 2", arm2.getCurrentPosition());
+                telemetry.addData("Elbow", elbow.getCurrentPosition());
                 telemetry.addData("Power", mpower);
                 telemetry.addData("Error", merror);
                 telemetry.addData("Error Difference", md_error);
