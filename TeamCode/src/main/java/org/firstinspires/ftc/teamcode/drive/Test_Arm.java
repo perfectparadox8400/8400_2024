@@ -9,7 +9,6 @@ import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.util.LoggingUtil;
 
-//WE NEED TO PUSH THIS CODE TO THE BOT AUGHGHGHGH
 @TeleOp(name = "Test Arm By Power")
 public class Test_Arm extends LinearOpMode {
     private DcMotor lowarm1;
@@ -22,8 +21,6 @@ public class Test_Arm extends LinearOpMode {
      */
 
     @Override
-
-
     public void runOpMode() {
         lowarm1 = hardwareMap.get(DcMotor.class, "arm1");
         lowarm2 = hardwareMap.get(DcMotor.class, "arm2");

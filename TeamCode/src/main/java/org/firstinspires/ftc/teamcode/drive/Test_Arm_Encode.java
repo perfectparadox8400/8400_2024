@@ -5,16 +5,17 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.util.LoggingUtil;
 
 @TeleOp(name = "Test Arm Encoders")
 public class Test_Arm_Encode extends LinearOpMode {
-    private DcMotor lowarm1;
-    private DcMotor lowarm2;
-    private DcMotor middlearm;
 
+    private DcMotor lowArm1;
+    private DcMotor lowArm2;
+    private DcMotor middleArm;
     private int lowArm1Value = 0;
     private int lowArm2Value = 0;
     private int middleArmValue = 0;
@@ -27,6 +28,7 @@ public class Test_Arm_Encode extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+
         lowArm1 = hardwareMap.get(DcMotor.class, "arm1");
         lowArm2 = hardwareMap.get(DcMotor.class, "arm2");
         middleArm = hardwareMap.get(DcMotor.class, "arm3");
@@ -44,9 +46,9 @@ public class Test_Arm_Encode extends LinearOpMode {
         lowArm2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         middleArm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        lowArm1Value = lowArm1.getCurrentPosition();
-        lowArm2Value = lowArm2.getCurrentPosition();
-        middleArmValue = middleArm.getCurrentPosition();
+        lowArm1.setTargetPosition(0);
+        lowArm2.setTargetPosition(0);
+        middleArm.setTargetPosition(0);
 
         waitForStart();
         if (opModeIsActive()) {
