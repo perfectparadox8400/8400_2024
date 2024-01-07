@@ -39,14 +39,14 @@ public class ArmTests extends LinearOpMode {
         arm2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         elbow.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        double Kp = 0;
+        double Kp = 0.2;
         double Ki = 0;
         double Kd = 0;
 
         double reference = 0;
         double integralSum = 0;
         double lastError = 0;
-        double encoderPosition;
+        double encoderAngle;
         double error;
         double derivative;
         double out;
@@ -76,6 +76,9 @@ public class ArmTests extends LinearOpMode {
         double power = 0;
         double w = 1;
         double d = 0;
+        double ticks = 282; //ticks per revolution
+        double holdPower = .2; //power to hold the arm up at 0 degrees
+
 
         waitForStart();
         if (opModeIsActive()) {
@@ -107,7 +110,7 @@ public class ArmTests extends LinearOpMode {
 
                 if (gamepad1.y) {
                     if (y){
-                        power += .005;
+                        Kp += .005;
                         y = false;
                     }
                 } else {
@@ -115,7 +118,7 @@ public class ArmTests extends LinearOpMode {
                 }
                 if (gamepad1.a) {
                     if (a){
-                        power -= .005;
+                        Kp -= .005;
                         a = false;
                     }
                 } else {
@@ -139,15 +142,15 @@ public class ArmTests extends LinearOpMode {
                     b = true;
                 }
 
-                encoderPosition = arm1.getCurrentPosition();
+                encoderAngle = arm1.getCurrentPosition() * 360/ticks;
 
-                error = reference - encoderPosition;
+                error = reference - encoderAngle;
 
                 derivative = (error - lastError) / timer.seconds();
 
                 integralSum = integralSum + (error * timer.seconds());
 
-                out = (-1 * 0.2 * cos(toRadians(encoderPosition*360/282))) + (Kp * error) + (Ki * integralSum) + (Kd * derivative);
+                out = (-1 * holdPower * cos(toRadians(encoderAngle))) + (Kp * error) + (Ki * integralSum) + (Kd * derivative);
 
                 lastError = error;
 
@@ -184,9 +187,9 @@ public class ArmTests extends LinearOpMode {
                 TelemetryPacket packet = new TelemetryPacket();
                 packet.put("Kp", Kp);
                 packet.put("Kd", Kd);
-                packet.put("Current Angle", (encoderPosition*360/282);
+                packet.put("Current Angle", (encoderAngle));
                 packet.put("Power", power);
-                packet.put("Target Position", reference);
+                packet.put("Target Angle", (reference));
                 dashboard.sendTelemetryPacket(packet);
 
             }
