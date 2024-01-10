@@ -1,6 +1,4 @@
 package org.firstinspires.ftc.teamcode.drive;
-
-
 import static java.lang.Math.cos;
 import static java.lang.Math.toRadians;
 
@@ -18,6 +16,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class ArmTests extends LinearOpMode {
     private DcMotor arm1;
     private DcMotor arm2;
+    private DcMotor arm3;
     private DcMotor elbow;
     private Servo wrist;
     private Servo hand;
@@ -26,7 +25,7 @@ public class ArmTests extends LinearOpMode {
     public void runOpMode() {
         arm1 = hardwareMap.get(DcMotor.class, "arm1");
         arm2 = hardwareMap.get(DcMotor.class, "arm2");
-        elbow = hardwareMap.get(DcMotor.class, "arm3");
+        elbow = hardwareMap.get(DcMotor.class, "arm4");
         wrist = hardwareMap.get(Servo.class, "wrist");
         hand = hardwareMap.get(Servo.class, "hand");
         arm1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -39,73 +38,63 @@ public class ArmTests extends LinearOpMode {
         arm2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         elbow.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        double Kp = 0.2;
+        double Kp = 0;
         double Ki = 0;
         double Kd = 0;
+        double m_Kp = 0;
+        double m_Ki = 0;
+        double m_Kd = 0;
 
-        double reference = 0;
+        double target = 0;
         double integralSum = 0;
         double lastError = 0;
         double encoderAngle;
         double error;
         double derivative;
         double out;
-//        int target = 0;
-//        int error = 0;
-//        int last_error;
-//        int d_error;
-//        double kp = .1;
-//        double kd = .1;
-//        double power;
-//
-//        int mtarget = 0;
-//        int merror = 0;
-//        int mlast_error;
-//        int md_error;
-//        double mkp = .1;
-//        double mkd = .1;
-//        double mpower;
-
-        double pwrist = 0;
-        double phand = 0;
-        ElapsedTime timer = new ElapsedTime();
+        double ticks = 282; //ticks per revolution
+        double holdPower = 0.25; //power to hold the arm up at 0 degrees
+        double m_target = 0;
+        double m_integralSum = 0;
+        double m_lastError = 0;
+        double m_encoderAngle;
+        double m_error;
+        double m_derivative;
+        double m_out;
+        double m_holdPower = 0.2; //power to hold the middle arm up at 0 degrees
+        double weight = 1;
+        
+        double wrist_d = 0;
+        double hand_d = 0;
         boolean y = true;
         boolean a = true;
         boolean x = true;
         boolean b = true;
-        double power = 0;
-        double w = 1;
-        double d = 0;
-        double ticks = 282; //ticks per revolution
-        double holdPower = .2; //power to hold the arm up at 0 degrees
 
+        double power = 0.25;
 
+        ElapsedTime timer = new ElapsedTime();
+        FtcDashboard dashboard = FtcDashboard.getInstance();
+        TelemetryPacket packet = new TelemetryPacket();
         waitForStart();
         if (opModeIsActive()) {
             while (opModeIsActive()) {
                 if (gamepad2.dpad_up) {
-                    reference -= .1;
-
+                    target -= 0.1;
                 } else if (gamepad2.dpad_down) {
-                    reference += .1;
+                    target += 0.1;
                 }
 
                 if (gamepad2.y) {
-//                    mtarget += 1;
+                    hand_d += 1;
                 } else if (gamepad2.a) {
-//                    mtarget -= 1;
+                    hand_d -= 1;
                 }
 
                 if (gamepad2.x) {
-                    pwrist = 0;
+                    wrist_d = 0;
                 } else if (gamepad2.b) {
-                    pwrist = 1;
-                }
-
-                if (gamepad2.left_bumper) {
-                    phand = 0;
-                } else if (gamepad2.right_bumper) {
-                    phand = 1;
+                    wrist_d = 1;
                 }
 
                 if (gamepad1.y) {
@@ -116,6 +105,7 @@ public class ArmTests extends LinearOpMode {
                 } else {
                     y = true;
                 }
+                
                 if (gamepad1.a) {
                     if (a){
                         Kp -= .005;
@@ -127,15 +117,16 @@ public class ArmTests extends LinearOpMode {
 
                 if (gamepad1.x) {
                     if (x){
-                        w += .005;
+                        power += .005;
                         x = false;
                     }
                 } else {
                     x = true;
                 }
+                
                 if (gamepad1.b) {
                     if (b){
-                        w -= .005;
+                        power -= .005;
                         b = false;
                     }
                 } else {
@@ -143,55 +134,37 @@ public class ArmTests extends LinearOpMode {
                 }
 
                 encoderAngle = arm1.getCurrentPosition() * 360/ticks;
-
-                error = reference - encoderAngle;
-
+                m_encoderAngle = elbow.getCurrentPosition() * 360/ticks;
+                error = target - encoderAngle;
+                m_error = m_target - m_encoderAngle;
                 derivative = (error - lastError) / timer.seconds();
-
+                m_derivative = (m_error - m_lastError) / timer.seconds();
                 integralSum = integralSum + (error * timer.seconds());
+                m_integralSum = m_integralSum + (m_error * timer.seconds());
 
                 out = (-1 * holdPower * cos(toRadians(encoderAngle))) + (Kp * error) + (Ki * integralSum) + (Kd * derivative);
+                m_out = (-1 * m_holdPower * cos(toRadians(m_encoderAngle))) + (m_Kp * m_error) + (m_Ki * m_integralSum) + (m_Kd * m_derivative);
 
                 lastError = error;
-
+                m_lastError = m_error;
                 timer.reset();
 
-//                last_error = error;
-//                mlast_error = merror;
-//
-//                error = target - arm1.getCurrentPosition();
-//                merror = mtarget - elbow.getCurrentPosition();
-//
-//                d_error = error - last_error;
-//                md_error = merror - mlast_error;
-//
-//                power = ((kp*error) + (kd*d_error));
-//                mpower = ((mkp*merror) + (mkd*md_error));
+                arm1.setPower(-power); //out
+                arm2.setPower(-power); //out
+                elbow.setPower(0.2); //power
+                wrist.setPosition(wrist_d);
+                hand.setPosition(hand_d);
 
-                arm1.setPower(out);
-                arm2.setPower(out);
-                //elbow.setPower(-mpower);
-                //arm1.setPower(power);
-                //arm2.setPower(power);
-                wrist.setPosition(pwrist);
-                hand.setPosition(phand);
-
-                telemetry.addData("Arm 1", arm1.getCurrentPosition());
-                telemetry.addData("Arm 2", arm2.getCurrentPosition());
-                telemetry.addData("Elbow", elbow.getCurrentPosition());
+                telemetry.addData("Arm", encoderAngle);
+                telemetry.addData("Elbow", m_encoderAngle);
                 telemetry.addData("Power", out);
-                telemetry.addData("Error", error);
-                telemetry.addData("Error Difference", derivative);
                 telemetry.update();
-                FtcDashboard dashboard = FtcDashboard.getInstance();
-                TelemetryPacket packet = new TelemetryPacket();
                 packet.put("Kp", Kp);
                 packet.put("Kd", Kd);
-                packet.put("Current Angle", (encoderAngle));
+                packet.put("Current Angle", encoderAngle);
                 packet.put("Power", power);
-                packet.put("Target Angle", (reference));
+                packet.put("Target Angle", target);
                 dashboard.sendTelemetryPacket(packet);
-
             }
         }
     }
