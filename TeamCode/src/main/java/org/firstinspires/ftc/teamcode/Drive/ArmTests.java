@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.sun.tools.javac.comp.Check;
 
 //DESIRED POWER = (MAX BATTERY VOLTS/CURRENT VOLTS) * GIVEN POWER
 
@@ -54,6 +55,8 @@ public class ArmTests extends LinearOpMode {
         double out;
         double ticks = 282; //ticks per revolution
         double holdPower = 0.25; //power to hold the arm up at 0 degrees
+        double extHoldPower = 0.5; //power to hold the arm up when main boom and jib boom are both fully extended at 0 degrees.
+        double powerDiff = extHoldPower - holdPower; //Difference between power when arm is in and power when arm is out.
         double m_target = 0;
         double m_integralSum = 0;
         double m_lastError = 0;
@@ -63,6 +66,9 @@ public class ArmTests extends LinearOpMode {
         double m_out;
         double m_holdPower = 0.2; //power to hold the middle arm up at 0 degrees
         double weight = 1;
+        double weightMod;
+        double armHolder;
+        double elbowEditedAngle;
         
         double wrist_d = 0;
         double hand_d = 0;
@@ -142,16 +148,31 @@ public class ArmTests extends LinearOpMode {
                 integralSum = integralSum + (error * timer.seconds());
                 m_integralSum = m_integralSum + (m_error * timer.seconds());
 
-                out = (-1 * holdPower * cos(toRadians(encoderAngle))) + (Kp * error) + (Ki * integralSum) + (Kd * derivative);
-                m_out = (-1 * m_holdPower * cos(toRadians(m_encoderAngle))) + (m_Kp * m_error) + (m_Ki * m_integralSum) + (m_Kd * m_derivative);
+                elbowEditedAngle = m_encoderAngle;
+
+                weightMod = -1 * powerDiff * cos(.5 * toRadians(m_encoderAngle));
+
+                armHolder = -1 * holdPower * cos(toRadians(encoderAngle));
+
+                if (!((weightMod * armHolder) > 0)) {
+                    weightMod *= -1;
+                }
+
+                
+
+
+                out = (armHolder) + (weightMod) + (Kp * error) + (Ki * integralSum) + (Kd * derivative);
+                m_out = (m_holdPower * cos(toRadians(elbowEditedAngle))) + (m_Kp * m_error) + (m_Ki * m_integralSum) + (m_Kd * m_derivative);
+
+
 
                 lastError = error;
                 m_lastError = m_error;
                 timer.reset();
 
-                arm1.setPower(-power); //out
-                arm2.setPower(-power); //out
-                elbow.setPower(0.2); //power
+                arm1.setPower(out); //out
+                arm2.setPower(out); //out
+                elbow.setPower(m_out); //power
                 wrist.setPosition(wrist_d);
                 hand.setPosition(hand_d);
 
@@ -162,8 +183,12 @@ public class ArmTests extends LinearOpMode {
                 packet.put("Kp", Kp);
                 packet.put("Kd", Kd);
                 packet.put("Current Angle", encoderAngle);
-                packet.put("Power", power);
+                packet.put("Main Boom Power", out);
+                packet.put("Jib Boom Power", m_out);
+                packet.put("edited angle", elbowEditedAngle);
+                packet.put("Jib Boom angle", m_encoderAngle);
                 packet.put("Target Angle", target);
+                //packet.put("Power modifier", CheckMeOut);
                 dashboard.sendTelemetryPacket(packet);
             }
         }
