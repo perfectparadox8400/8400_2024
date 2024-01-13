@@ -13,11 +13,6 @@ public class Strafe extends LinearOpMode {
     private DcMotor left_front;
     private DcMotor left_back;
     private DcMotor right_back;
-    private DcMotor inta1;
-    private DcMotor inta2;
-    private DcMotor slide;
-    private DcMotor slided;
-    private Servo hand;
 
 
     /**
@@ -29,10 +24,7 @@ public class Strafe extends LinearOpMode {
         left_front = hardwareMap.get(DcMotor.class, "left_front");
         left_back = hardwareMap.get(DcMotor.class, "left_back");
         right_back = hardwareMap.get(DcMotor.class, "right_back");
-        inta1 = hardwareMap.get(DcMotor.class, "inta1");
-        inta2 = hardwareMap.get(DcMotor.class, "inta2");
-        slide = hardwareMap.get(DcMotor.class, "slide");
-        hand = hardwareMap.get(Servo.class, "hand");
+
         double power;
         double power2;
 
@@ -40,7 +32,6 @@ public class Strafe extends LinearOpMode {
         // In this example, the right motor was reversed so that positive
         // applied power makes it move the robot in the forward direction.
         right_front.setDirection(DcMotorSimple.Direction.REVERSE);
-        inta1.setDirection(DcMotorSimple.Direction.REVERSE);
         // You will have to determine which motor to reverse for your robot.
         // In this example, the right motor was reversed so that positive
         // applied power makes it move the robot in the forward direction.
@@ -68,32 +59,6 @@ public class Strafe extends LinearOpMode {
                 left_back.setPower(gamepad1.left_stick_y/power - gamepad1.left_stick_x/power + gamepad1.right_stick_x/power);
                 right_back.setPower(gamepad1.left_stick_y/power + gamepad1.left_stick_x/power - gamepad1.right_stick_x/power);
                 
-                if (gamepad2.dpad_up) {
-                    slide.setPower(-1);
-                } else if (gamepad2.dpad_down) {
-                    slide.setPower(0.8);
-                } else if (gamepad2.left_bumper) {
-                    slide.setPower(-0.01);
-                }else{
-                    slide.setPower(0);
-                }
-
-                if (gamepad2.x) {
-                    hand.setPosition(0.6);
-                } else if (gamepad2.a) {
-                    hand.setPosition(1);
-                }
-                // Intake
-                if (gamepad1.right_bumper) {
-                    inta1.setPower(power2);
-                    inta2.setPower(power2);
-                } else if (gamepad1.left_bumper) {
-                    inta1.setPower(-power2);
-                    inta2.setPower(-power2);
-                }else{
-                    inta1.setPower(0);
-                    inta2.setPower(0);
-                }
                 telemetry.addData("LF POW", left_front.getPower());
                 telemetry.addData("LB POW", left_back.getPower());
                 telemetry.addData("RF POW", right_front.getPower());

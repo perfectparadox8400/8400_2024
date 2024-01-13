@@ -55,12 +55,15 @@ public class HoldPosition extends LinearOpMode {
         double Pb = 0;
 
         double elbowTarget = 0;
+        double handTarget = 0;
+
 
         double powerMod;
 
         boolean up_pressed = true;
         boolean down_pressed = true;
-
+        boolean a_pressed = true;
+        boolean b_pressed = true;
 
 
         waitForStart();
@@ -90,6 +93,26 @@ public class HoldPosition extends LinearOpMode {
                 }
 
                 elbow.setPosition(elbowTarget);
+
+                if (gamepad2.a && (handTarget < 1)) {
+                    if (a_pressed) {
+                        handTarget += .05;
+                        a_pressed = false;
+                    }
+                } else {
+                    a_pressed = true;
+                }
+
+                if (gamepad2.b && (handTarget > 0)) {
+                    if (b_pressed) {
+                        handTarget -= .05;
+                        b_pressed = false;
+                    }
+                } else {
+                    b_pressed = true;
+                }
+
+                hand.setPosition(handTarget);
 
                 c1Tmp = c1;
                 c2Tmp = c2;
