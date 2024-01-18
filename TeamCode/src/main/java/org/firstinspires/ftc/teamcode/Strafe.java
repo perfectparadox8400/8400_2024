@@ -9,53 +9,30 @@ import com.qualcomm.robotcore.hardware.Servo;
 @TeleOp(name = "Strafe")
 public class Strafe extends LinearOpMode {
 
-    private DcMotor right_front;
-    private DcMotor left_front;
-    private DcMotor left_back;
-    private DcMotor right_back;
-
-
-    /**
-     * This function is executed when this Op Mode is selected from the Driver Station.
-     */
     @Override
     public void runOpMode() {
-        right_front = hardwareMap.get(DcMotor.class, "right_front");
-        left_front = hardwareMap.get(DcMotor.class, "left_front");
-        left_back = hardwareMap.get(DcMotor.class, "left_back");
-        right_back = hardwareMap.get(DcMotor.class, "right_back");
+        DcMotor right_front = hardwareMap.get(DcMotor.class, "right_front");
+        DcMotor left_front = hardwareMap.get(DcMotor.class, "left_front");
+        DcMotor left_back = hardwareMap.get(DcMotor.class, "left_back");
+        DcMotor right_back = hardwareMap.get(DcMotor.class, "right_back");
 
         double power;
-        double power2;
 
         // You will have to determine which motor to reverse for your robot.
-        // In this example, the right motor was reversed so that positive
-        // applied power makes it move the robot in the forward direction.
-        right_front.setDirection(DcMotorSimple.Direction.REVERSE);
-        // You will have to determine which motor to reverse for your robot.
-        // In this example, the right motor was reversed so that positive
-        // applied power makes it move the robot in the forward direction.
-        left_front.setDirection(DcMotorSimple.Direction.REVERSE);
-        // Reverse one of the drive motors.
+        //right_front.setDirection(DcMotorSimple.Direction.REVERSE);
+        //left_front.setDirection(DcMotorSimple.Direction.REVERSE);
         waitForStart();
         if (opModeIsActive()) {
             while (opModeIsActive()) {
-                // The Y axis of a joystick ranges from -1 in its topmost position
-                // to +1 in its bottommost position. We negate this value so that
-                // the topmost position corresponds to maximum forward power
                 power = 2.5;
-                power2 = 0.4;
-                if (gamepad2.b|| gamepad1.b){
+                if (gamepad2.b || gamepad1.b){
                     power = 0.0000000000001;
                 }
-                if (gamepad2.y) {
+                if (gamepad2.a) {
                     power = 1;
                 }
                 left_front.setPower(gamepad1.left_stick_y/power + gamepad1.left_stick_x/power + gamepad1.right_stick_x/power);
                 right_front.setPower(gamepad1.left_stick_y/power - gamepad1.left_stick_x/power - gamepad1.right_stick_x/power);
-                // The Y axis of a joystick ranges from -1 in its topmost position
-                // to +1 in its bottommost position. We negate this value so that
-                // the topmost position corresponds to maximum forward power.
                 left_back.setPower(gamepad1.left_stick_y/power - gamepad1.left_stick_x/power + gamepad1.right_stick_x/power);
                 right_back.setPower(gamepad1.left_stick_y/power + gamepad1.left_stick_x/power - gamepad1.right_stick_x/power);
                 
