@@ -19,8 +19,8 @@ public class Strafe extends LinearOpMode {
         double power;
 
         // You will have to determine which motor to reverse for your robot.
-        //right_front.setDirection(DcMotorSimple.Direction.REVERSE);
-        //left_front.setDirection(DcMotorSimple.Direction.REVERSE);
+        right_back.setDirection(DcMotorSimple.Direction.REVERSE);
+        left_front.setDirection(DcMotorSimple.Direction.REVERSE);
         waitForStart();
         if (opModeIsActive()) {
             while (opModeIsActive()) {
@@ -31,10 +31,10 @@ public class Strafe extends LinearOpMode {
                 if (gamepad2.a) {
                     power = 1;
                 }
-                left_front.setPower(gamepad1.left_stick_y/power + gamepad1.left_stick_x/power + gamepad1.right_stick_x/power);
-                right_front.setPower(gamepad1.left_stick_y/power - gamepad1.left_stick_x/power - gamepad1.right_stick_x/power);
-                left_back.setPower(gamepad1.left_stick_y/power - gamepad1.left_stick_x/power + gamepad1.right_stick_x/power);
-                right_back.setPower(gamepad1.left_stick_y/power + gamepad1.left_stick_x/power - gamepad1.right_stick_x/power);
+                left_front.setPower(-gamepad1.left_stick_y/power + gamepad1.left_stick_x/power + gamepad1.right_stick_x/power);
+                right_front.setPower(-gamepad1.left_stick_y/power - gamepad1.left_stick_x/power - gamepad1.right_stick_x/power);
+                left_back.setPower(-gamepad1.left_stick_y/power - gamepad1.left_stick_x/power + gamepad1.right_stick_x/power);
+                right_back.setPower(-gamepad1.left_stick_y/power + gamepad1.left_stick_x/power - gamepad1.right_stick_x/power);
                 
                 telemetry.addData("LF POW", left_front.getPower());
                 telemetry.addData("LB POW", left_back.getPower());

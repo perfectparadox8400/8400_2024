@@ -89,10 +89,7 @@ public class PlayGame extends LinearOpMode {
         // You will have to determine which motor to reverse for your robot.
         // In this example, the right motor was reversed so that positive
         // applied power makes it move the robot in the forward direction.
-        right_front.setDirection(DcMotorSimple.Direction.REVERSE);
-        // You will have to determine which motor to reverse for your robot.
-        // In this example, the right motor was reversed so that positive
-        // applied power makes it move the robot in the forward direction.
+        right_back.setDirection(DcMotorSimple.Direction.REVERSE);
         left_front.setDirection(DcMotorSimple.Direction.REVERSE);
         // Reverse one of the drive motors.
 
@@ -227,13 +224,11 @@ public class PlayGame extends LinearOpMode {
                 if (gamepad1.y) {
                     power = 1;
                 }
-                left_front.setPower(gamepad1.left_stick_y/power + gamepad1.left_stick_x/power + gamepad1.right_stick_x/power);
-                right_front.setPower(gamepad1.left_stick_y/power - gamepad1.left_stick_x/power - gamepad1.right_stick_x/power);
-                // The Y axis of a joystick ranges from -1 in its topmost position
-                // to +1 in its bottommost position. We negate this value so that
-                // the topmost position corresponds to maximum forward power.
-                left_back.setPower(gamepad1.left_stick_y/power - gamepad1.left_stick_x/power + gamepad1.right_stick_x/power);
-                right_back.setPower(gamepad1.left_stick_y/power + gamepad1.left_stick_x/power - gamepad1.right_stick_x/power);
+
+                left_front.setPower(-gamepad1.left_stick_y/power + gamepad1.left_stick_x/power + gamepad1.right_stick_x/power);
+                right_front.setPower(-gamepad1.left_stick_y/power - gamepad1.left_stick_x/power - gamepad1.right_stick_x/power);
+                left_back.setPower(-gamepad1.left_stick_y/power - gamepad1.left_stick_x/power + gamepad1.right_stick_x/power);
+                right_back.setPower(-gamepad1.left_stick_y/power + gamepad1.left_stick_x/power - gamepad1.right_stick_x/power);
 
 
 
