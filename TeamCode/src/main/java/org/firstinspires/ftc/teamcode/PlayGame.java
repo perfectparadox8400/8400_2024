@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.drive;
+package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -13,25 +13,17 @@ import static java.lang.Math.toRadians;
 @TeleOp(name = "!! Play Game")
 public class PlayGame extends LinearOpMode {
     //ARM
-    private DcMotor mainBoom1;
-    private DcMotor mainBoom2;
-    private DcMotor jibBoom;
-    private Servo elbow;
-    private Servo hand;
+    public DcMotor mainBoom1 = null;
+    public DcMotor mainBoom2 = null;
+    public DcMotor jibBoom = null;
+    public Servo elbow = null;
+    public Servo hand = null;
 
     //WHEELS
-
-
-    private DcMotor right_front;
-    private DcMotor left_front;
-    private DcMotor left_back;
-    private DcMotor right_back;
-
-
-
-    /**
-     * This function is executed when this Op Mode is selected from the Driver Station.
-     */
+    public DcMotor right_front = null;
+    public DcMotor left_front = null;
+    public DcMotor left_back = null;
+    public DcMotor right_back = null;
 
     @Override
     public void runOpMode() {
@@ -48,7 +40,6 @@ public class PlayGame extends LinearOpMode {
         mainBoom1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         mainBoom2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         jibBoom.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
 
         double ticks = 282;
 
@@ -84,18 +75,10 @@ public class PlayGame extends LinearOpMode {
         right_back = hardwareMap.get(DcMotor.class, "right_back");
 
         double power;
-        double power2;
 
-        // You will have to determine which motor to reverse for your robot.
-        // In this example, the right motor was reversed so that positive
-        // applied power makes it move the robot in the forward direction.
-        right_front.setDirection(DcMotorSimple.Direction.REVERSE);
-        // You will have to determine which motor to reverse for your robot.
-        // In this example, the right motor was reversed so that positive
-        // applied power makes it move the robot in the forward direction.
-        left_front.setDirection(DcMotorSimple.Direction.REVERSE);
         // Reverse one of the drive motors.
-
+        right_back.setDirection(DcMotorSimple.Direction.REVERSE);
+        left_front.setDirection(DcMotorSimple.Direction.REVERSE);
 
         waitForStart();
         if (opModeIsActive()) {
@@ -107,7 +90,7 @@ public class PlayGame extends LinearOpMode {
                 angle1 += 18;
                 angle2 -= 180;
 
-                if (gamepad2.b && (elbowTarget < 1)) {
+                if (gamepad2.dpad_left && (elbowTarget < 1)) {
                     if (down_pressed) {
                         elbowTarget += .05;
                         down_pressed = false;
@@ -116,7 +99,7 @@ public class PlayGame extends LinearOpMode {
                     down_pressed = true;
                 }
 
-                if (gamepad2.x && (elbowTarget > 0)) {
+                if (gamepad2.dpad_right && (elbowTarget > 0)) {
                     if (up_pressed) {
                         elbowTarget -= .05;
                         up_pressed = false;
@@ -127,7 +110,7 @@ public class PlayGame extends LinearOpMode {
 
                 elbow.setPosition(elbowTarget);
 
-                if (gamepad2.dpad_right && (handTarget < 1)) {
+                if (gamepad2.b && (handTarget < 1)) {
                     if (a_pressed) {
                         handTarget += .05;
                         a_pressed = false;
@@ -136,7 +119,7 @@ public class PlayGame extends LinearOpMode {
                     a_pressed = true;
                 }
 
-                if (gamepad2.dpad_left && (handTarget > 0)) {
+                if (gamepad2.x && (handTarget > 0)) {
                     if (b_pressed) {
                         handTarget -= .05;
                         b_pressed = false;
@@ -172,15 +155,10 @@ public class PlayGame extends LinearOpMode {
                     c3Tmp = 0;
                 }
 
-
-
-
                 Pa = (c1Tmp * cos(toRadians(angle1))) + (c2Tmp*cos(toRadians(angle1 + abs(angle2))));
                 Pb = (c3Tmp * cos(toRadians(abs(angle1)+angle2)));
                 //Pa = c1+c2;
                 //Pb = c3;
-
-
 
 
                 if (gamepad2.left_bumper) {
@@ -191,61 +169,46 @@ public class PlayGame extends LinearOpMode {
                     powerMod = 1;
                 }
 
-                if (gamepad2.a) {
+                if (gamepad2.dpad_up) {
                     Pa += .3;
                     Pa *= powerMod;
-                } else if (gamepad2.y) {
+                } else if (gamepad2.dpad_down) {
                     Pa -= .3;
                     Pa *= powerMod;
                 }
-                if (gamepad2.dpad_up) {
+                if (gamepad2.y) {
                     Pb += .3;
                     Pb *= powerMod;
-                } else if (gamepad2.dpad_down) {
+                } else if (gamepad2.a) {
                     Pb -= .3;
                     Pb *= powerMod;
                 }
 
-
-
                 mainBoom1.setPower(Pa);
                 mainBoom2.setPower(Pa);
-
                 jibBoom.setPower(Pb);
 
-
                 //WHEELS
-
-                // The Y axis of a joystick ranges from -1 in its topmost position
-                // to +1 in its bottommost position. We negate this value so that
-                // the topmost position corresponds to maximum forward power
                 power = 2.5;
-                power2 = 0.4;
                 if (gamepad1.b){
                     power = 0.0000000000001;
                 }
                 if (gamepad1.y) {
                     power = 1;
                 }
-                left_front.setPower(gamepad1.left_stick_y/power + gamepad1.left_stick_x/power + gamepad1.right_stick_x/power);
-                right_front.setPower(gamepad1.left_stick_y/power - gamepad1.left_stick_x/power - gamepad1.right_stick_x/power);
-                // The Y axis of a joystick ranges from -1 in its topmost position
-                // to +1 in its bottommost position. We negate this value so that
-                // the topmost position corresponds to maximum forward power.
-                left_back.setPower(gamepad1.left_stick_y/power - gamepad1.left_stick_x/power + gamepad1.right_stick_x/power);
-                right_back.setPower(gamepad1.left_stick_y/power + gamepad1.left_stick_x/power - gamepad1.right_stick_x/power);
 
-
+                left_front.setPower(-gamepad1.left_stick_y/power + gamepad1.left_stick_x/power + gamepad1.right_stick_x/power);
+                right_front.setPower(-gamepad1.left_stick_y/power - gamepad1.left_stick_x/power - gamepad1.right_stick_x/power);
+                left_back.setPower(-gamepad1.left_stick_y/power - gamepad1.left_stick_x/power + gamepad1.right_stick_x/power);
+                right_back.setPower(-gamepad1.left_stick_y/power + gamepad1.left_stick_x/power - gamepad1.right_stick_x/power);
 
                 //Wheel Telemetry
-
                 telemetry.addData("LF POW", left_front.getPower());
                 telemetry.addData("LB POW", left_back.getPower());
                 telemetry.addData("RF POW", right_front.getPower());
                 telemetry.addData("RB POW", right_back.getPower());
 
                 //Arm Telemetry
-
                 telemetry.addData("Arm Position", mainBoom1.getCurrentPosition());
                 telemetry.addData("Main Boom Power", Pa);
                 telemetry.addData("Jib Boom Power", Pb);
