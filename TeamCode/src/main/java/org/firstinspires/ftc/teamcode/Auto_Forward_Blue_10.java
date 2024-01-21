@@ -9,8 +9,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name="Auto Go Forward")
-public class Auto_Forward extends LinearOpMode {
+@Autonomous(name="Auto Go Forward Blue 10")
+public class Auto_Forward_Blue_10 extends LinearOpMode {
     private final ElapsedTime     runtime = new ElapsedTime();
     static final double     COUNTS_PER_MOTOR_REV    = 537.6;
     static final double     DRIVE_GEAR_REDUCTION    = 0.70588;
@@ -61,10 +61,15 @@ public class Auto_Forward extends LinearOpMode {
 
         waitForStart();
         if (opModeIsActive()) {
-            encoderDrive(DRIVE_SPEED,  40,  40, 500);
+            sleep(1000);
+            encoderDrive(DRIVE_SPEED,  24,  24, 250);
+            encoderDrive(DRIVE_SPEED,  4,  4, 500);
+            encoderDrive(DRIVE_SPEED,  -4,  -4, 500);
+            encoderDrive(TURN_SPEED,   -16, 16, 500);
+            encoderDrive(DRIVE_SPEED,  85,  85, 500);
             hand.setPosition(0);
             jibBoom.setPower(-0.5);
-            sleep(100);
+            sleep(200);
             jibBoom.setPower(0);
         }
 
