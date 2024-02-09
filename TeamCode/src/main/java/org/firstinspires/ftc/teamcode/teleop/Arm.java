@@ -14,7 +14,7 @@ import com.sun.tools.javac.comp.Check;
 //DESIRED POWER = (MAX BATTERY VOLTS/CURRENT VOLTS) * GIVEN POWER
 
 @TeleOp(name = "Arm Testing")
-public class ArmTests extends LinearOpMode {
+public class Arm extends LinearOpMode {
     private DcMotor arm1;
     private DcMotor arm2;
     private DcMotor arm3;
