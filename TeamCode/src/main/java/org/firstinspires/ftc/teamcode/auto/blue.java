@@ -1,9 +1,11 @@
+package org.firstinspires.ftc.teamcode.auto;
+
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.teamcode.DetectionPipeline;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Rect;
@@ -21,6 +23,10 @@ public class blue extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+
+        TelemetryPacket packet = new TelemetryPacket();
+
+
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
 
@@ -40,9 +46,15 @@ public class blue extends LinearOpMode {
 
         waitForStart();
 
+        FtcDashboard.getInstance().startCameraStream(webcam, 0);
+
+
         while (opModeIsActive()) {
             telemetry.addData("Analysis", pipeline.getAnalysis());
             telemetry.addData("Position", pipeline.getPosition());
+            packet.put("Analysis", pipeline.getAnalysis());
+            packet.put("Position", pipeline.getPosition());
+            FtcDashboard.getInstance().sendTelemetryPacket(packet);
             telemetry.update();
 
             sleep(100);
@@ -92,6 +104,7 @@ public class blue extends LinearOpMode {
             } else {
                 position = Position.UNKNOWN;
             }
+
 
             return input;
         }

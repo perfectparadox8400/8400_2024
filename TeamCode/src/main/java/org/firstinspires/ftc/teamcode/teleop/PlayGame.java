@@ -19,6 +19,8 @@ public class PlayGame extends LinearOpMode {
     public Servo elbow = null;
     public Servo hand = null;
 
+    public Servo launcher = null;
+
     //WHEELS
     public DcMotor right_front = null;
     public DcMotor left_front = null;
@@ -34,6 +36,7 @@ public class PlayGame extends LinearOpMode {
         jibBoom = hardwareMap.get(DcMotor.class, "arm3");
         elbow = hardwareMap.get(Servo.class, "elbow");
         hand = hardwareMap.get(Servo.class, "hand");
+        launcher = hardwareMap.get(Servo.class, "launcher");
         mainBoom1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         mainBoom2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         jibBoom.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -59,6 +62,8 @@ public class PlayGame extends LinearOpMode {
 
         double elbowTarget = 0;
         double handTarget = 1 ;
+
+
 
 
         double powerMod;
@@ -143,6 +148,10 @@ public class PlayGame extends LinearOpMode {
                     mainBoom2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                     jibBoom.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
+                }
+
+                if (gamepad2.right_stick_button) {
+                    launcher.setPosition(1);
                 }
 
                 //Kill Main Boom Motors
