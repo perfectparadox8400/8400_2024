@@ -6,17 +6,23 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import org.firstinspires.ftc.teamcode.auto.red.CubeDetectionPipeline;
+
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+//import org.firstinspires.ftc.teamcode.auto.red;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
+
 import java.util.Objects;
 
-@Autonomous(name="Red Forward Long")
+@Autonomous(name="Red Long")
 public class Red_Forward_Long extends LinearOpMode {
     private final ElapsedTime     runtime = new ElapsedTime();
     static final double     COUNTS_PER_MOTOR_REV    = 537.6;
     static final double     DRIVE_GEAR_REDUCTION    = 0.70588;
     static final double     WHEEL_DIAMETER_INCHES   = 4.0 ;
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * 3.1415);
-    static final double     DRIVE_SPEED             = 0.5;
+    static final double     DRIVE_SPEED             = 0.3;
     static final double     TURN_SPEED              = 0.2;
     static final double FEET_PER_METER = 3.28084;
 
@@ -27,8 +33,9 @@ public class Red_Forward_Long extends LinearOpMode {
     public Servo hand = null;
 
     public DcMotor jibBoom = null;
-
-    public String boxlocation = null;
+    public String boxlocation = "UNKNOWN";
+    OpenCvCamera webcam;
+    //red.CubeDetectionPipeline pipeline;
     @Override
     public void runOpMode() {
         right_front =  hardwareMap.get(DcMotor.class, "right_front");
@@ -43,28 +50,46 @@ public class Red_Forward_Long extends LinearOpMode {
 
         left_front.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         right_front.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        left_back.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        right_back.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         left_front.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         right_front.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        left_back.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        right_back.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // Send telemetry message to indicate successful Encoder reset
-        telemetry.addData("Encoder",  "Starting at %7d :%7d :%7d :%7d", left_front.getCurrentPosition(), right_front.getCurrentPosition());
+        telemetry.addData("Encoder",  "Starting at %7d :%7d :%7d :%7d", left_front.getCurrentPosition(), right_front.getCurrentPosition(), right_back.getCurrentPosition(), right_back.getCurrentPosition());
         telemetry.update();
 
         right_back.setDirection(DcMotorSimple.Direction.REVERSE);
         left_front.setDirection(DcMotorSimple.Direction.REVERSE);
         hand.setPosition(1);
         jibBoom.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        left_back.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        right_back.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
 
+        //pipeline = new red.CubeDetectionPipeline();
+        //webcam.setPipeline(pipeline);
+
+        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+            @Override
+            public void onOpened() {
+                webcam.startStreaming(320,240, OpenCvCameraRotation.UPRIGHT);
+            }
+
+            @Override
+            public void onError(int errorCode) {
+            }
+        });
         while (!isStarted() && !isStopRequested()){
-            boxlocation = CubeDetectionPipeline.getAnalysis();
-            telemetry.addData("Position", CubeDetectionPipeline.getAnalysis());
+            //boxlocation = red.CubeDetectionPipeline.getAnalysis();
+            telemetry.addData("Position", boxlocation);
             telemetry.update();
         }
         waitForStart();
         if (opModeIsActive()) {
+            sleep(1000);
             if (Objects.equals(boxlocation, "CENTER") || Objects.equals(boxlocation, "UNKNOWN")){
                 encoderDrive(DRIVE_SPEED,  24,  24, 250);
                 encoderDrive(DRIVE_SPEED,  4,  4, 500);
@@ -85,16 +110,10 @@ public class Red_Forward_Long extends LinearOpMode {
                 encoderDrive(DRIVE_SPEED,  20,  20, 250);
                 encoderDrive(TURN_SPEED,   -18, 17, 500);
                 encoderDrive(DRIVE_SPEED,  -85,  -85, 500);
-            } else {
-                encoderDrive(DRIVE_SPEED,  24,  24, 250);
-                encoderDrive(DRIVE_SPEED,  4,  4, 500);
-                encoderDrive(DRIVE_SPEED,  -24,  -24, 500);
-                encoderDrive(TURN_SPEED,   17, -18, 500);
-                encoderDrive(DRIVE_SPEED,  85,  85, 500);
             }
             hand.setPosition(0);
             jibBoom.setPower(-0.5);
-            sleep(100);
+            sleep(200);
             jibBoom.setPower(0);
         }
 
@@ -110,10 +129,14 @@ public class Red_Forward_Long extends LinearOpMode {
             newRightTarget = right_front.getCurrentPosition() + (int)(rightInches * COUNTS_PER_INCH);
             left_front.setTargetPosition(newLeftTarget);
             right_front.setTargetPosition(newRightTarget);
+            left_back.setTargetPosition(newLeftTarget);
+            right_back.setTargetPosition(newRightTarget);
 
             // Turn On RUN_TO_POSITION
             left_front.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             right_front.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            left_back.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            right_back.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
             // reset the timeout time and start motion.
             runtime.reset();
@@ -128,13 +151,15 @@ public class Red_Forward_Long extends LinearOpMode {
             // always end the motion as soon as possible.
             // However, if you require that BOTH motors have finished their moves before the robot continues
             // onto the next step, use (isBusy() || isBusy()) in the loop test.
-            while (opModeIsActive() && (left_front.isBusy() || right_front.isBusy())) {
+            while (opModeIsActive() && (left_front.isBusy() || right_front.isBusy() || left_back.isBusy() || right_back.isBusy())) {
 
                 // Display it for the driver.
                 telemetry.addData("Path1",  "Running to %7d :%7d", newLeftTarget,  newRightTarget);
                 telemetry.addData("Path2",  "Running at %7d :%7d :%7d :%7d",
                         left_front.getCurrentPosition(),
-                        right_front.getCurrentPosition());
+                        right_front.getCurrentPosition(),
+                        left_back.getCurrentPosition(),
+                        right_back.getCurrentPosition());
                 telemetry.update();
             }
 
@@ -148,6 +173,8 @@ public class Red_Forward_Long extends LinearOpMode {
             // Turn off RUN_TO_POSITION
             left_front.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             right_front.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            left_back.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            right_back.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
             sleep(timeoutS);   // optional pause after each move
         }

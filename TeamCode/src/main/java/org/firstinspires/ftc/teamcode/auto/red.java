@@ -1,8 +1,9 @@
 package org.firstinspires.ftc.teamcode.auto;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -21,6 +22,23 @@ public class red extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+        TelemetryPacket packet = new TelemetryPacket();
+        setupcam();
+
+        waitForStart();
+        FtcDashboard.getInstance().startCameraStream(webcam, 0);
+
+        while (opModeIsActive()) {
+            telemetry.addData("Analysis", CubeDetectionPipeline.getAnalysis());
+            telemetry.addData("Position", CubeDetectionPipeline.getPosition());
+            packet.put("Analysis", pipeline.getAnalysis());
+            packet.put("Position", pipeline.getPosition());
+            FtcDashboard.getInstance().sendTelemetryPacket(packet);
+            telemetry.update();
+            sleep(100);
+        }
+    }
+    public void setupcam(){
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
 
@@ -30,23 +48,13 @@ public class red extends LinearOpMode {
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened() {
-                webcam.startStreaming(320,240, OpenCvCameraRotation.UPRIGHT);
+                webcam.startStreaming(1280,720, OpenCvCameraRotation.UPRIGHT);
             }
 
             @Override
             public void onError(int errorCode) {
             }
         });
-
-        waitForStart();
-
-        while (opModeIsActive()) {
-            telemetry.addData("Analysis", pipeline.getAnalysis());
-            telemetry.addData("Position", pipeline.getPosition());
-            telemetry.update();
-
-            sleep(100);
-        }
     }
     public static class CubeDetectionPipeline extends OpenCvPipeline {
         Mat mat = new Mat();
@@ -58,7 +66,7 @@ public class red extends LinearOpMode {
             RIGHT,
             UNKNOWN
         }
-        private Position position = Position.UNKNOWN;
+        private static Position position = Position.UNKNOWN;
 
         @Override
         public Mat processFrame(Mat input) {
@@ -102,11 +110,11 @@ public class red extends LinearOpMode {
             return input;
         }
 
-        public Position getPosition() {
+        public static Position getPosition() {
             return position;
         }
 
-        public String getAnalysis() {
+        public static String getAnalysis() {
             return position.toString();
         }
     }

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -13,8 +13,7 @@ import static java.lang.Math.toRadians;
 @TeleOp(name = "!! Play Game")
 public class PlayGame extends LinearOpMode {
     //ARM
-    public DcMotor mainBoom1 = null;
-    public DcMotor mainBoom2 = null;
+    public DcMotor mainBoom = null;
     public DcMotor jibBoom = null;
     public Servo elbow = null;
     public Servo hand = null;
@@ -31,17 +30,14 @@ public class PlayGame extends LinearOpMode {
     public void runOpMode() {
 
         //ARM
-        mainBoom1 = hardwareMap.get(DcMotor.class, "arm1");
-        mainBoom2 = hardwareMap.get(DcMotor.class, "arm2");
-        jibBoom = hardwareMap.get(DcMotor.class, "arm3");
+        mainBoom = hardwareMap.get(DcMotor.class, "main_arm");
+        jibBoom = hardwareMap.get(DcMotor.class, "jib_arm");
         elbow = hardwareMap.get(Servo.class, "elbow");
         hand = hardwareMap.get(Servo.class, "hand");
         launcher = hardwareMap.get(Servo.class, "launcher");
-        mainBoom1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        mainBoom2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        mainBoom.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         jibBoom.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        mainBoom1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        mainBoom2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        mainBoom.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         jibBoom.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         double ticks = 282;
@@ -62,9 +58,6 @@ public class PlayGame extends LinearOpMode {
 
         double elbowTarget = 0;
         double handTarget = 1 ;
-
-
-
 
         double powerMod;
 
@@ -90,7 +83,7 @@ public class PlayGame extends LinearOpMode {
             while (opModeIsActive()) {
 
                 //ARM
-                angle1 = mainBoom1.getCurrentPosition() * 360/ticks;
+                angle1 = mainBoom.getCurrentPosition() * 360/ticks;
                 angle2 = jibBoom.getCurrentPosition() * 360/ticks;
                 angle1 += 18;
                 angle2 -= 180;
@@ -141,16 +134,14 @@ public class PlayGame extends LinearOpMode {
 
                 //Reset Encoders
                 if (gamepad2.start) {
-                    mainBoom1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    mainBoom2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    mainBoom.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     jibBoom.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    mainBoom1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                    mainBoom2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                    mainBoom.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                     jibBoom.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
                 }
 
-                if (gamepad2.right_stick_button) {
+                if (gamepad1.right_stick_button) {
                     launcher.setPosition(1);
                 }
 
@@ -169,6 +160,10 @@ public class PlayGame extends LinearOpMode {
                 //Pa = c1+c2;
                 //Pb = c3;
 
+                //DELETE TO HAVE HOLDING TORQUE
+                Pa = 0;
+                Pb = 0;
+
 
                 if (gamepad2.left_bumper) {
                     powerMod = .5;
@@ -179,22 +174,21 @@ public class PlayGame extends LinearOpMode {
                 }
 
                 if (gamepad2.dpad_up) {
-                    Pa += .3;
+                    Pa = 1;
                     Pa *= powerMod;
                 } else if (gamepad2.dpad_down) {
-                    Pa -= .3;
+                    Pa = -1;
                     Pa *= powerMod;
                 }
                 if (gamepad2.y) {
-                    Pb += .3;
+                    Pb = 1;
                     Pb *= powerMod;
                 } else if (gamepad2.a) {
-                    Pb -= .3;
+                    Pb = -1;
                     Pb *= powerMod;
                 }
 
-                mainBoom1.setPower(Pa);
-                mainBoom2.setPower(Pa);
+                mainBoom.setPower(Pa);
                 jibBoom.setPower(Pb);
 
                 //WHEELS
@@ -218,7 +212,7 @@ public class PlayGame extends LinearOpMode {
                 telemetry.addData("RB POW", right_back.getPower());
 
                 //Arm Telemetry
-                telemetry.addData("Arm Position", mainBoom1.getCurrentPosition());
+                telemetry.addData("Arm Position", mainBoom.getCurrentPosition());
                 telemetry.addData("Main Boom Power", Pa);
                 telemetry.addData("Jib Boom Power", Pb);
                 telemetry.addData("C 2 Var", c2);

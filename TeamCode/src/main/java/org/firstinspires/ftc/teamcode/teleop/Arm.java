@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.teleop;
 import static java.lang.Math.cos;
 import static java.lang.Math.toRadians;
 

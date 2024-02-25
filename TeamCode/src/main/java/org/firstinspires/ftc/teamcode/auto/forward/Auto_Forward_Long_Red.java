@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.auto.forward;
 
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -47,8 +47,8 @@ public class Auto_Forward_Long_Red extends LinearOpMode {
 
         left_front.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         right_front.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        left_back.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        right_back.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        left_back.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        right_back.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // Send telemetry message to indicate successful Encoder reset
         telemetry.addData("Encoder",  "Starting at %7d :%7d :%7d :%7d", left_front.getCurrentPosition(), right_front.getCurrentPosition(), right_back.getCurrentPosition(), right_back.getCurrentPosition());
@@ -89,8 +89,6 @@ public class Auto_Forward_Long_Red extends LinearOpMode {
             // Turn On RUN_TO_POSITION
             left_front.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             right_front.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            left_back.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            right_back.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
             // reset the timeout time and start motion.
             runtime.reset();
@@ -127,8 +125,6 @@ public class Auto_Forward_Long_Red extends LinearOpMode {
             // Turn off RUN_TO_POSITION
             left_front.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             right_front.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            left_back.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            right_back.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
             sleep(timeoutS);   // optional pause after each move
         }
