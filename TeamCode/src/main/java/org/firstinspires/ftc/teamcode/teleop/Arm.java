@@ -1,4 +1,5 @@
 package org.firstinspires.ftc.teamcode.teleop;
+import static java.lang.Math.abs;
 import static java.lang.Math.cos;
 import static java.lang.Math.toRadians;
 
@@ -186,7 +187,6 @@ public class Arm extends LinearOpMode {
                     out = armHolder + weightMod + (Kp * error) + (Kd * d_error);
                 } else {
                     out = armHolder + weightMod;                }
-
 
                 //m_out = (m_holdPower * cos(toRadians(elbowEditedAngle))) + (m_Kp * m_error) + (m_Kd * m_d_error);
 
