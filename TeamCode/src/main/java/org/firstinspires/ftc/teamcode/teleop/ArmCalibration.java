@@ -30,10 +30,6 @@ public class ArmCalibration extends LinearOpMode {
         mainBoom = hardwareMap.get(DcMotor.class, "main_arm");
         jibBoom = hardwareMap.get(DcMotor.class, "jib_arm");
 
-
-        boolean up_pressed = true;
-        boolean down_pressed = true;
-
         mainBoom.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         mainBoom.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         mainBoom.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -42,7 +38,10 @@ public class ArmCalibration extends LinearOpMode {
         jibBoom.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         jibBoom.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-
+        boolean up_pressed = true;
+        boolean down_pressed = true;
+        boolean a_pressed = true;
+        boolean b_pressed = true;
 
         double Kp = 0;
         double Kd = 0;
@@ -51,9 +50,11 @@ public class ArmCalibration extends LinearOpMode {
 
         double angle1;
         double angle2;
-
+        //Power to hold Main Boom when Jib Boom is at 90 Degrees
         double c1 = .01;
-        double c2 = -.2;
+        //Power to hold Main Boom when Jib Boom is fully extended
+        double c2 = .2;
+        //Power to hold Jib Boom when it is fully extended.
         double c3 = .1;
 
         double c1Tmp;
@@ -65,7 +66,8 @@ public class ArmCalibration extends LinearOpMode {
 
 
         double target = 0;
-        double ticks = 282; //ticks per revolution
+        double mainBoomTicks = 28 * 100 ; //ticks per revolution
+        double jibBoomTicks = 28 * 36;
 
         FtcDashboard dashboard = FtcDashboard.getInstance();
         TelemetryPacket packet = new TelemetryPacket();
@@ -74,8 +76,8 @@ public class ArmCalibration extends LinearOpMode {
             while (opModeIsActive()) {
 
                 //ARM
-                angle1 = mainBoom.getCurrentPosition() * 360/ticks;
-                angle2 = jibBoom.getCurrentPosition() * 360/ticks;
+                angle1 = mainBoom.getCurrentPosition() * 360/mainBoomTicks;
+                angle2 = jibBoom.getCurrentPosition() * 360/jibBoomTicks;
                 //angle1 += 18;
                 angle2 -= 180;
 
@@ -85,11 +87,8 @@ public class ArmCalibration extends LinearOpMode {
                 c2Tmp = c2;
                 c3Tmp = c3;
 
-                Pa = (c1Tmp * cos(toRadians(angle1))) + (c2Tmp*cos(toRadians(angle1 + abs(angle2))));
-                //Pb = (c3Tmp * cos(toRadians(abs(angle1)+angle2)));
-                Pa *= -1;
-//                mainBoom.setPower(Pa);
-//                jibBoom.setPower(Pb);
+
+                //Pa *= -1;
 
                 if (gamepad2.dpad_up) {
                     if (up_pressed) {
@@ -107,6 +106,9 @@ public class ArmCalibration extends LinearOpMode {
                 } else {
                     down_pressed = true;
                 }
+
+                //Pa = (c1Tmp * cos(toRadians(angle1))) + (c2Tmp*cos(toRadians(angle1 + abs(angle2))));
+                //Pb = (c3Tmp * cos(toRadians(abs(angle1)+angle2)));
 
 
                 mainBoom.setPower(Pa);
