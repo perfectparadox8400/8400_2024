@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name="Auto Go Forward Red 10 Short")
+@Autonomous(name="Auto Go Forward Red 10 Short", group="Auto Go Forward")
 public class Auto_Forward_Red_10_Short extends LinearOpMode {
     private final ElapsedTime     runtime = new ElapsedTime();
     static final double     COUNTS_PER_MOTOR_REV    = 537.6;

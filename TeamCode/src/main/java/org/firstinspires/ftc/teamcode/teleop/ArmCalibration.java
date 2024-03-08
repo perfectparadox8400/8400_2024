@@ -53,9 +53,9 @@ public class ArmCalibration extends LinearOpMode {
         //Power to hold Main Boom when Jib Boom is at 90 Degrees
         double c1 = .01;
         //Power to hold Main Boom when Jib Boom is fully extended
-        double c2 = .2;
+        double c2 = .05;
         //Power to hold Jib Boom when it is fully extended.
-        double c3 = .1;
+        double c3 = .01;
 
         double c1Tmp;
         double c2Tmp;
@@ -78,8 +78,8 @@ public class ArmCalibration extends LinearOpMode {
                 //ARM
                 angle1 = mainBoom.getCurrentPosition() * 360/mainBoomTicks;
                 angle2 = jibBoom.getCurrentPosition() * 360/jibBoomTicks;
-                //angle1 += 18;
-                angle2 -= 180;
+                angle1 += 20;
+                angle2 -= 170;
 
 
 
@@ -88,31 +88,24 @@ public class ArmCalibration extends LinearOpMode {
                 c3Tmp = c3;
 
 
-                //Pa *= -1;
+                Pa = (c1Tmp * cos(toRadians(angle1))) + (c2Tmp*cos(toRadians(angle1 + abs(angle2))));
+                Pb = (c3Tmp * cos(toRadians(abs(angle1)+angle2)));
 
                 if (gamepad2.dpad_up) {
-                    if (up_pressed) {
-                        Pa += .005;
-                        up_pressed = false;
-                    }
-                } else {
-                    up_pressed = true;
+                    Pa = -1;
                 }
                 if (gamepad2.dpad_down) {
-                    if (down_pressed) {
-                        Pa -= .005;
-                        down_pressed = false;
-                    }
-                } else {
-                    down_pressed = true;
+                    Pa = 1;
+                }
+                if (gamepad2.a) {
+                    Pb = 1;
+                }
+                if (gamepad2.y) {
+                    Pb = -1;
                 }
 
-                //Pa = (c1Tmp * cos(toRadians(angle1))) + (c2Tmp*cos(toRadians(angle1 + abs(angle2))));
-                //Pb = (c3Tmp * cos(toRadians(abs(angle1)+angle2)));
-
-
                 mainBoom.setPower(Pa);
-
+                jibBoom.setPower(Pb);
                 telemetry.addData("Arm", angle1);
                 telemetry.addData("Arm Power", Pa);
                 telemetry.addData("Jib Boom", angle2);
