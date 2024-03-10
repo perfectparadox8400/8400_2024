@@ -156,7 +156,7 @@ public class PlayGame extends LinearOpMode {
                 }
 
                 Pa = (c1Tmp * cos(toRadians(angle1))) + (c2Tmp*cos(toRadians(angle1 + abs(angle2))));
-                Pb = (c3Tmp * cos(toRadians(abs(angle1)+angle2)));
+                //Pb = (c3Tmp * cos(toRadians(abs(angle1)+angle2)));
                 //Pa = c1+c2;
                 //Pb = c3;
 

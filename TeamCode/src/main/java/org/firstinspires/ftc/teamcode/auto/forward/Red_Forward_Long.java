@@ -15,7 +15,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.Objects;
 
-@Autonomous(name="Red Long", group="Auto Go Forward")
+@Autonomous(name="Red Long", group = "Old Auto")
 public class Red_Forward_Long extends LinearOpMode {
     private final ElapsedTime     runtime = new ElapsedTime();
     static final double     COUNTS_PER_MOTOR_REV    = 537.6;
