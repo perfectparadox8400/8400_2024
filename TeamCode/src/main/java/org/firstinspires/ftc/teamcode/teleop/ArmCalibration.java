@@ -89,19 +89,20 @@ public class ArmCalibration extends LinearOpMode {
 
 
                 Pa = (c1Tmp * cos(toRadians(angle1))) + (c2Tmp*cos(toRadians(angle1 + abs(angle2))));
-                Pb = (c3Tmp * cos(toRadians(abs(angle1)+angle2)));
+                //Pb = (c3Tmp * cos(toRadians(abs(angle1)+angle2)));
 
                 if (gamepad2.dpad_up) {
                     Pa = -1;
-                }
-                if (gamepad2.dpad_down) {
+                } else if (gamepad2.dpad_down) {
                     Pa = 1;
                 }
+
                 if (gamepad2.a) {
                     Pb = 1;
-                }
-                if (gamepad2.y) {
+                } else if (gamepad2.y) {
                     Pb = -1;
+                } else {
+                    Pb = 0;
                 }
 
                 mainBoom.setPower(Pa);
