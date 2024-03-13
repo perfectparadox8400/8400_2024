@@ -10,13 +10,21 @@ import static java.lang.Math.abs;
 import static java.lang.Math.cos;
 import static java.lang.Math.toRadians;
 
-@TeleOp(name = "!! Play Game")
+@TeleOp(name = "Arm and Drive")
 public class PlayGame extends LinearOpMode {
-    //ARM
+    //elbow 1
+    private Servo elbow1;
+    //elbow 2
+    private Servo elbow2;
+    //grabber right
+    private Servo grabberRight;
+    //grabber left
+    private Servo grabberLeft;
+
+    boolean rightBumperPressed = false;
+    boolean leftBumperPressed = false;
     public DcMotor mainBoom = null;
     public DcMotor jibBoom = null;
-    public Servo elbow = null;
-    public Servo hand = null;
 
     public Servo launcher = null;
 
@@ -26,11 +34,18 @@ public class PlayGame extends LinearOpMode {
     public DcMotor left_back = null;
     public DcMotor right_back = null;
 
+
+
     @Override
     public void runOpMode() {
 
         mainBoom = hardwareMap.get(DcMotor.class, "main_arm");
         jibBoom = hardwareMap.get(DcMotor.class, "jib_arm");
+        elbow1 = hardwareMap.get(Servo.class, "servo1");
+        //elbow2 = hardwareMap.get(Servo.class, "servo2");
+        grabberRight = hardwareMap.get(Servo.class, "servo3");
+        grabberLeft = hardwareMap.get(Servo.class, "servo4");
+
 
         mainBoom.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         mainBoom.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -40,10 +55,6 @@ public class PlayGame extends LinearOpMode {
         jibBoom.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         jibBoom.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        boolean up_pressed = true;
-        boolean down_pressed = true;
-        boolean a_pressed = true;
-        boolean b_pressed = true;
 
         double Kp = 0;
         double Kd = 0;
@@ -66,8 +77,16 @@ public class PlayGame extends LinearOpMode {
         double Pa = 0;
         double Pb = 0;
 
+        double holdTorque;
 
-        double target = 0;
+        boolean rightBumperPing = true;
+        boolean leftBumperPing = true;
+
+        double rightTarget = 1;
+        double leftTarget = 0;
+        grabberRight.setPosition(rightTarget);
+        grabberLeft.setPosition(leftTarget);
+        elbow1.setPosition(.5);
         double mainBoomTicks = 28 * 125 ; //ticks per revolution
         double jibBoomTicks = 28 * 125;
 
@@ -88,44 +107,75 @@ public class PlayGame extends LinearOpMode {
         if (opModeIsActive()) {
             while (opModeIsActive()) {
 
-
                 //ARM
                 angle1 = mainBoom.getCurrentPosition() * 360/mainBoomTicks;
                 angle2 = jibBoom.getCurrentPosition() * 360/jibBoomTicks;
                 angle1 += 24;
                 angle2 -= 170;
+
                 if (angle1 < 0) {
                     angle1 = 360+angle1;
                 }
                 if (angle2 < 0) {
-                    angle2 = 360+angle1;
+                    angle2 = 360 + angle1;
                 }
+
+                if (rightBumperPing & !gamepad2.right_bumper) {
+                    rightBumperPing = false;
+                }
+
+                if (gamepad2.right_bumper && rightBumperPressed && !rightBumperPing) {
+                    rightTarget = 1;
+                    rightBumperPressed = false;
+                    rightBumperPing = true;
+                }
+                if (gamepad2.right_bumper && !rightBumperPressed && !rightBumperPing) {
+                    rightTarget = grabberRight.getPosition() - .75;
+                    rightBumperPressed = true;
+                    rightBumperPing = true;
+                }
+
+                if (leftBumperPing & !gamepad2.left_bumper) {
+                    leftBumperPing = false;
+                }
+                if (gamepad2.left_bumper && leftBumperPressed && !leftBumperPing) {
+                    leftTarget = 0;
+                    leftBumperPressed = false;
+                    leftBumperPing = true;
+                }
+                if (gamepad2.left_bumper && !leftBumperPressed && !leftBumperPing) {
+                    leftTarget = grabberLeft.getPosition() + .3;
+                    leftTarget = 1;
+                    leftBumperPressed = true;
+                    leftBumperPing = true;
+                }
+
+                if (gamepad2.dpad_up) {
+                    elbow1.setPosition(elbow1.getPosition() + .005);
+                }
+                if (gamepad2.dpad_down) {
+                    elbow1.setPosition(elbow1.getPosition() - .005);
+                }
+
+                grabberRight.setPosition(rightTarget);
+                grabberLeft.setPosition(leftTarget);
 
                 c1Tmp = c1;
                 c2Tmp = c2;
-                //c3Tmp = c3;
 
-
-                Pa = (c1Tmp * cos(toRadians(angle1))) + (c2Tmp*cos(toRadians(angle1 + abs(angle2))));
+                holdTorque = (c1Tmp * cos(toRadians(angle1))) + (c2Tmp*cos(toRadians(angle1 + abs(angle2))));
 
                 //Pb = (c3Tmp * cos(toRadians(abs(angle1)+angle2)));
 
-                if (gamepad2.dpad_up) {
-                    Pa = 1;
-                } else if (gamepad2.dpad_down) {
-                    Pa = -1;
-                }
-
-                if (gamepad2.a) {
-                    Pb = 1;
-                } else if (gamepad2.y) {
-                    Pb = -1;
+                Pa = (-gamepad2.left_stick_y * .5);
+                if (Pa < 0) {
+                    Pa -= holdTorque;
                 } else {
-                    Pb = 0;
+                    Pa += holdTorque;
                 }
 
-                mainBoom.setPower(Pa);
-                jibBoom.setPower(Pb);
+                Pb = gamepad2.right_stick_y * .7;
+
 
 
                 //WHEELS
@@ -136,6 +186,8 @@ public class PlayGame extends LinearOpMode {
                 if (gamepad1.y) {
                     power = 1;
                 }
+                mainBoom.setPower(Pa);
+                jibBoom.setPower(Pb);
 
                 left_front.setPower(-gamepad1.left_stick_y/power + gamepad1.left_stick_x/power + gamepad1.right_stick_x/power);
                 right_front.setPower(-gamepad1.left_stick_y/power - gamepad1.left_stick_x/power - gamepad1.right_stick_x/power);

@@ -71,6 +71,8 @@ public class ArmCalibration extends LinearOpMode {
         double Pa = 0;
         double Pb = 0;
 
+        double holdTorque;
+
         boolean rightBumperPing = true;
         boolean leftBumperPing = true;
 
@@ -107,12 +109,13 @@ public class ArmCalibration extends LinearOpMode {
                 }
 
                 if (gamepad2.right_bumper && rightBumperPressed && !rightBumperPing) {
+                    //CLOSED
                     rightTarget = 1;
                     rightBumperPressed = false;
                     rightBumperPing = true;
                 }
                 if (gamepad2.right_bumper && !rightBumperPressed && !rightBumperPing) {
-                    rightTarget = 0;
+                    rightTarget = grabberRight.getPosition() - .75;
                     rightBumperPressed = true;
                     rightBumperPing = true;
                 }
@@ -121,20 +124,23 @@ public class ArmCalibration extends LinearOpMode {
                     leftBumperPing = false;
                 }
                 if (gamepad2.left_bumper && leftBumperPressed && !leftBumperPing) {
+                    //CLOSED
                     leftTarget = 0;
                     leftBumperPressed = false;
                     leftBumperPing = true;
                 }
                 if (gamepad2.left_bumper && !leftBumperPressed && !leftBumperPing) {
-                    leftTarget = 1;
+                    leftTarget = grabberLeft.getPosition() + .3;
                     leftBumperPressed = true;
                     leftBumperPing = true;
                 }
 
-                if (gamepad2.dpad_left) {
+
+
+                if (gamepad2.dpad_up) {
                     elbow1.setPosition(elbow1.getPosition() + .005);
                 }
-                if (gamepad2.dpad_right) {
+                if (gamepad2.dpad_down) {
                     elbow1.setPosition(elbow1.getPosition() - .005);
                 }
 
@@ -144,23 +150,20 @@ public class ArmCalibration extends LinearOpMode {
                 c1Tmp = c1;
                 c2Tmp = c2;
 
-                Pa = (c1Tmp * cos(toRadians(angle1))) + (c2Tmp*cos(toRadians(angle1 + abs(angle2))));
+                holdTorque = (c1Tmp * cos(toRadians(angle1))) + (c2Tmp*cos(toRadians(angle1 + abs(angle2))));
 
                 //Pb = (c3Tmp * cos(toRadians(abs(angle1)+angle2)));
 
-                if (gamepad2.dpad_up) {
-                    Pa = 1;
-                } else if (gamepad2.dpad_down) {
-                    Pa = -1;
+                Pa = (-gamepad2.left_stick_y * .5);
+                if (Pa < 0) {
+                    Pa += holdTorque;
+                } else {
+                    Pa -= holdTorque;
                 }
 
-                if (gamepad2.a) {
-                    Pb = 1;
-                } else if (gamepad2.y) {
-                    Pb = -1;
-                } else {
-                    Pb = 0;
-                }
+                Pb = gamepad2.right_stick_y * .7;
+
+
 
                 mainBoom.setPower(Pa);
                 jibBoom.setPower(Pb);
