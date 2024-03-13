@@ -10,7 +10,7 @@ import static java.lang.Math.abs;
 import static java.lang.Math.cos;
 import static java.lang.Math.toRadians;
 
-@TeleOp(name = "Arm and Drive")
+@TeleOp(name = "! Arm and Drive")
 public class PlayGame extends LinearOpMode {
     //elbow 1
     private Servo elbow1;
