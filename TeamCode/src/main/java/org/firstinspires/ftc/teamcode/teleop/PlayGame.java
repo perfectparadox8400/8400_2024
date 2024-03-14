@@ -10,8 +10,9 @@ import static java.lang.Math.abs;
 import static java.lang.Math.cos;
 import static java.lang.Math.toRadians;
 
-@TeleOp(name = "! Arm and Drive")
+@TeleOp(name = "! Play Game")
 public class PlayGame extends LinearOpMode {
+    private Servo droneLauncher;
     //elbow 1
     private Servo elbow1;
     //elbow 2
@@ -45,6 +46,7 @@ public class PlayGame extends LinearOpMode {
         //elbow2 = hardwareMap.get(Servo.class, "servo2");
         grabberRight = hardwareMap.get(Servo.class, "servo3");
         grabberLeft = hardwareMap.get(Servo.class, "servo4");
+        droneLauncher = hardwareMap.get(Servo.class, "drone");
 
 
         mainBoom.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -81,6 +83,7 @@ public class PlayGame extends LinearOpMode {
 
         boolean rightBumperPing = true;
         boolean leftBumperPing = true;
+        boolean b_pressed = false;
 
         double rightTarget = 1;
         double leftTarget = 0;
@@ -120,6 +123,10 @@ public class PlayGame extends LinearOpMode {
                     angle2 = 360 + angle1;
                 }
 
+                if (gamepad2.back) {
+                    droneLauncher.setPosition(1 );
+                }
+
                 if (rightBumperPing & !gamepad2.right_bumper) {
                     rightBumperPing = false;
                 }
@@ -130,7 +137,7 @@ public class PlayGame extends LinearOpMode {
                     rightBumperPing = true;
                 }
                 if (gamepad2.right_bumper && !rightBumperPressed && !rightBumperPing) {
-                    rightTarget = grabberRight.getPosition() - .75;
+                    rightTarget = .3;
                     rightBumperPressed = true;
                     rightBumperPing = true;
                 }
@@ -144,8 +151,8 @@ public class PlayGame extends LinearOpMode {
                     leftBumperPing = true;
                 }
                 if (gamepad2.left_bumper && !leftBumperPressed && !leftBumperPing) {
-                    leftTarget = grabberLeft.getPosition() + .3;
-                    leftTarget = 1;
+                    leftTarget = .35;
+                    //leftTarget = 1;
                     leftBumperPressed = true;
                     leftBumperPing = true;
                 }
@@ -156,6 +163,15 @@ public class PlayGame extends LinearOpMode {
                 if (gamepad2.dpad_down) {
                     elbow1.setPosition(elbow1.getPosition() - .005);
                 }
+
+                if (gamepad2.b) {
+                    rightTarget = 0;
+                    leftTarget = 1;
+                    leftBumperPressed = true;
+                    rightBumperPressed = true;
+                }
+
+
 
                 grabberRight.setPosition(rightTarget);
                 grabberLeft.setPosition(leftTarget);
