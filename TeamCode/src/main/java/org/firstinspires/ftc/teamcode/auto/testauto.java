@@ -25,12 +25,12 @@ public class testauto extends LinearOpMode {
     @Override
     public void runOpMode() {
         // instantiate your MecanumDrive at a particular pose
-        MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
+        MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(11.8, 61.7, Math.toRadians(90)));
         waitForStart();
         Action go;
         go = drive.actionBuilder(drive.pose)
-                .lineToXConstantHeading(48)
-                .turn(Math.toRadians(180))
+                //.lineToYConstantHeading(48) // Go forward to X=48
+                .turn(Math.toRadians(90))   // Turn 90 degrees (change this from 180 to 90)
                 .build();
         Actions.runBlocking(
                 new SequentialAction(

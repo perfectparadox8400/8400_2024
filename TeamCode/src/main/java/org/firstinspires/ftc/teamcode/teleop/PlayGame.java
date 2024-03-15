@@ -101,6 +101,7 @@ public class PlayGame extends LinearOpMode {
         right_back = hardwareMap.get(DcMotor.class, "right_back");
 
         double power;
+        double powers;
 
         // Reverse one of the drive motors.
         right_back.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -196,6 +197,7 @@ public class PlayGame extends LinearOpMode {
 
                 //WHEELS
                 power = 2.5;
+                powers = 0.5;
                 if (gamepad1.b){
                     power = 0.0000000000001;
                 }
@@ -205,10 +207,11 @@ public class PlayGame extends LinearOpMode {
                 mainBoom.setPower(Pa);
                 jibBoom.setPower(Pb);
 
-                left_front.setPower(-gamepad1.left_stick_y/power + gamepad1.left_stick_x/power + gamepad1.right_stick_x/power);
-                right_front.setPower(-gamepad1.left_stick_y/power - gamepad1.left_stick_x/power - gamepad1.right_stick_x/power);
-                left_back.setPower(-gamepad1.left_stick_y/power - gamepad1.left_stick_x/power + gamepad1.right_stick_x/power);
-                right_back.setPower(-gamepad1.left_stick_y/power + gamepad1.left_stick_x/power - gamepad1.right_stick_x/power);
+
+                left_front.setPower(-gamepad1.left_stick_y/power + gamepad1.left_stick_x/powers + gamepad1.right_stick_x/power);
+                right_front.setPower(-gamepad1.left_stick_y/power - gamepad1.left_stick_x/powers - gamepad1.right_stick_x/power);
+                left_back.setPower(-gamepad1.left_stick_y/power - gamepad1.left_stick_x/powers + gamepad1.right_stick_x/power);
+                right_back.setPower(-gamepad1.left_stick_y/power + gamepad1.left_stick_x/powers - gamepad1.right_stick_x/power);
 
                 //Wheel Telemetry
                 telemetry.addData("LF POW", left_front.getPower());
