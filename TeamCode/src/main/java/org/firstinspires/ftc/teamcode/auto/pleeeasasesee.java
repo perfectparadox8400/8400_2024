@@ -37,6 +37,8 @@ public class pleeeasasesee extends LinearOpMode {
     public DcMotor right_back = null;
     public Encoder par0, par1, perp;
 
+    int offsetVar;
+
     @Override
     public void runOpMode()  {
 
@@ -72,8 +74,11 @@ public class pleeeasasesee extends LinearOpMode {
         perp.setDirection(DcMotorSimple.Direction.REVERSE);
         waitForStart();
 
-        encoderDrive(DRIVE_SPEED,  12,  12, 5);
-        encoderTurn(TURN_SPEED,  -90,  -1, 5);
+        encoderDrive(DRIVE_SPEED,  -12,  -12, 3000);
+        encoderTurn(TURN_SPEED,  -90,  -1, 3000);
+        encoderTurn(TURN_SPEED,  90,  1, 5);
+        encoderDrive(DRIVE_SPEED,  12,  -12, 3000);
+        encoderDrive(DRIVE_SPEED,  12,  12, 3000);
         telemetry.addData("Path", "Complete");
         telemetry.update();
     }
@@ -95,11 +100,18 @@ public class pleeeasasesee extends LinearOpMode {
             //newTarget =  (COUNTS_PER_360 * -1 * (degrees/360));
             newTarget = (COUNTS_PER_360 * (degrees/360));
 
+            if (direction == -1) {
+                offsetVar = -825;
+            } else {
+                offsetVar = -830;
+            }
+
             while (go) {
                 telemetry.addData("Target", "Running at " + newTarget);
                 telemetry.addData("Running", "Running? " + go);
                 telemetry.update();
-                go = ((newTarget - (direction * 800)) > ((((parr0 - par0.getPositionAndVelocity().position) * -1) + (parr1 - par1.getPositionAndVelocity().position) + (( perrp - perp.getPositionAndVelocity().position) * -1))/3) * direction);
+
+                go = ((newTarget - (offsetVar * (degrees/90))) > ((((parr0 - par0.getPositionAndVelocity().position) * -1) + (parr1 - par1.getPositionAndVelocity().position) + (( perrp - perp.getPositionAndVelocity().position) * -1))/3) * direction);
                 if (go) {
                     left_back.setPower(speed * direction);
                     left_front.setPower(speed * direction);
@@ -138,11 +150,9 @@ public class pleeeasasesee extends LinearOpMode {
                     telemetry.addData("Target", "Running at " + newLeftTarget + " " +  newRightTarget);
                     telemetry.addData("Running", "Runing? " + goLeft + " " +  goRight);
                     telemetry.update();
-                    goLeft = ((newLeftTarget - 2500) > par0.getPositionAndVelocity().position);
-                    goRight = ((newRightTarget - 2500) > par1.getPositionAndVelocity().position);
-                    if ((newLeftTarget - par0.getPositionAndVelocity().position) < 6/COUNTS_PER_INCH) {
-                        speed = .15;
-                    }
+                    goLeft = ((newLeftTarget - 2300) > par0.getPositionAndVelocity().position);
+                    goRight = ((newRightTarget - 2300) > par1.getPositionAndVelocity().position);
+
                     if (goLeft) {
                         left_back.setPower(speed);
                         left_front.setPower(speed);
