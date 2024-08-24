@@ -79,8 +79,8 @@ public class blue extends LinearOpMode {
             Imgproc.cvtColor(input, mat, Imgproc.COLOR_RGB2HSV);
 
             // Blue color range
-            Scalar lowerBlue = new Scalar(100, 150, 0); // Lower bound for blue in HSV format
-            Scalar upperBlue = new Scalar(140, 255, 255); // Upper bound for blue in HSV format
+            Scalar lowerBlue = new Scalar(90, 100, 100);
+            Scalar upperBlue = new Scalar(130, 255, 255);
 
             Mat blueMask = new Mat();
 

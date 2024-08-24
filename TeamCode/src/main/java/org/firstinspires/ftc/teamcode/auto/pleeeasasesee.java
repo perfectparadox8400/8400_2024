@@ -74,11 +74,8 @@ public class pleeeasasesee extends LinearOpMode {
         perp.setDirection(DcMotorSimple.Direction.REVERSE);
         waitForStart();
 
-        encoderDrive(DRIVE_SPEED,  -12,  -12, 3000);
-        encoderTurn(TURN_SPEED,  -90,  -1, 3000);
+        encoderTurn(TURN_SPEED,  -90,  -1, 5000);
         encoderTurn(TURN_SPEED,  90,  1, 5);
-        encoderDrive(DRIVE_SPEED,  12,  -12, 3000);
-        encoderDrive(DRIVE_SPEED,  12,  12, 3000);
         telemetry.addData("Path", "Complete");
         telemetry.update();
     }
@@ -101,9 +98,9 @@ public class pleeeasasesee extends LinearOpMode {
             newTarget = (COUNTS_PER_360 * (degrees/360));
 
             if (direction == -1) {
-                offsetVar = -825;
+                offsetVar = 0;
             } else {
-                offsetVar = -830;
+                offsetVar = 0;
             }
 
             while (go) {
@@ -111,7 +108,7 @@ public class pleeeasasesee extends LinearOpMode {
                 telemetry.addData("Running", "Running? " + go);
                 telemetry.update();
 
-                go = ((newTarget - (offsetVar * (degrees/90))) > ((((parr0 - par0.getPositionAndVelocity().position) * -1) + (parr1 - par1.getPositionAndVelocity().position) + (( perrp - perp.getPositionAndVelocity().position) * -1))/3) * direction);
+                go = ((newTarget - (offsetVar * (degrees/90))) > ((((parr0 - par0.getPositionAndVelocity().position) * -1) + (parr1 - par1.getPositionAndVelocity().position))/2) * direction); //(( perrp - perp.getPositionAndVelocity().position) * -1)
                 if (go) {
                     left_back.setPower(speed * direction);
                     left_front.setPower(speed * direction);

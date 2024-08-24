@@ -20,7 +20,6 @@ public class red extends LinearOpMode {
     OpenCvCamera webcam;
     CubeDetectionPipeline pipeline;
 
-
     @Override
     public void runOpMode() {
         TelemetryPacket packet = new TelemetryPacket();
@@ -72,6 +71,9 @@ public class red extends LinearOpMode {
         private static double centerRedValue = 0.0;
         private static double rightRedValue = 0.0;
 
+//        private static double rightThreshold = 0;
+//        private static double centerThreshold = 1000000;
+//        private static double leftThreshold = 0;
         private static double THRESHOLD = 5000.0;
 
         @Override
@@ -108,9 +110,9 @@ public class red extends LinearOpMode {
             Mat right = mat.submat(rightRect);
 
             // Calculate the sum of red pixel values for each section
-            leftRedValue = Core.sumElems(left).val[0];
-            centerRedValue = Core.sumElems(center).val[0];
-            rightRedValue = Core.sumElems(right).val[0];
+            leftRedValue = Core.sumElems(left).val[0]; // + leftThreshold
+            centerRedValue = Core.sumElems(center).val[0]; // + centerThreshold
+            rightRedValue = Core.sumElems(right).val[0]; // + rightThreshold
 
             left.release();
             center.release();
@@ -157,7 +159,10 @@ public class red extends LinearOpMode {
 
         // Get the position based on the region with the highest red pixel value
         // Get the position based on the region with the highest red pixel value
+
+
         public static String getPosition() {
+
             if (leftRedValue > THRESHOLD && leftRedValue > centerRedValue && leftRedValue > rightRedValue) {
                 return "Left";
             } else if (centerRedValue > THRESHOLD && centerRedValue > leftRedValue && centerRedValue > rightRedValue) {

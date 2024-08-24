@@ -43,7 +43,7 @@ public class PlayGame extends LinearOpMode {
         mainBoom = hardwareMap.get(DcMotor.class, "main_arm");
         jibBoom = hardwareMap.get(DcMotor.class, "jib_arm");
         elbow1 = hardwareMap.get(Servo.class, "servo1");
-        //elbow2 = hardwareMap.get(Servo.class, "servo2");
+        elbow2 = hardwareMap.get(Servo.class, "servo2");
         grabberRight = hardwareMap.get(Servo.class, "servo3");
         grabberLeft = hardwareMap.get(Servo.class, "servo4");
         droneLauncher = hardwareMap.get(Servo.class, "drone");
@@ -89,7 +89,9 @@ public class PlayGame extends LinearOpMode {
         double leftTarget = 0;
         grabberRight.setPosition(rightTarget);
         grabberLeft.setPosition(leftTarget);
-        elbow1.setPosition(.5);
+        double elbowP = .15;
+        elbow1.setPosition(elbowP);
+        elbow2.setPosition(elbowP);
         double mainBoomTicks = 28 * 125 ; //ticks per revolution
         double jibBoomTicks = 28 * 125;
 
@@ -159,10 +161,22 @@ public class PlayGame extends LinearOpMode {
                 }
 
                 if (gamepad2.dpad_up) {
-                    elbow1.setPosition(elbow1.getPosition() + .005);
+                    if (elbowP < 1) {
+                        elbow1.setPosition(elbow1.getPosition() + .005);
+                        elbow2.setPosition(elbow2.getPosition() - .005);
+                        elbowP = elbowP + .005;
+                    } else {
+                        elbowP = 1;
+                    }
                 }
                 if (gamepad2.dpad_down) {
-                    elbow1.setPosition(elbow1.getPosition() - .005);
+                    if (elbowP > 0) {
+                        elbow1.setPosition(elbow1.getPosition() - .005);
+                        elbow2.setPosition(elbow2.getPosition() + .005);
+                        elbowP = elbowP - .005;
+                    } else {
+                        elbowP = 0;
+                    }
                 }
 
                 if (gamepad2.b) {
@@ -208,10 +222,10 @@ public class PlayGame extends LinearOpMode {
                 jibBoom.setPower(Pb);
 
 
-                left_front.setPower(-gamepad1.left_stick_y/power + gamepad1.left_stick_x/powers + gamepad1.right_stick_x/power);
-                right_front.setPower(-gamepad1.left_stick_y/power - gamepad1.left_stick_x/powers - gamepad1.right_stick_x/power);
-                left_back.setPower(-gamepad1.left_stick_y/power - gamepad1.left_stick_x/powers + gamepad1.right_stick_x/power);
-                right_back.setPower(-gamepad1.left_stick_y/power + gamepad1.left_stick_x/powers - gamepad1.right_stick_x/power);
+                left_front.setPower(-gamepad1.left_stick_y/power + gamepad1.left_stick_x/power + gamepad1.right_stick_x/power);
+                right_front.setPower(-gamepad1.left_stick_y/power - gamepad1.left_stick_x/power - gamepad1.right_stick_x/power);
+                left_back.setPower(-gamepad1.left_stick_y/power - gamepad1.left_stick_x/power + gamepad1.right_stick_x/power);
+                right_back.setPower(-gamepad1.left_stick_y/power + gamepad1.left_stick_x/power - gamepad1.right_stick_x/power);
 
                 //Wheel Telemetry
                 telemetry.addData("LF POW", left_front.getPower());
