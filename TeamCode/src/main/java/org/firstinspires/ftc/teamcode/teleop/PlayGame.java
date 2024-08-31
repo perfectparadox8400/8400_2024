@@ -127,7 +127,7 @@ public class PlayGame extends LinearOpMode {
                 }
 
                 if (gamepad2.back) {
-                    droneLauncher.setPosition(1 );
+                    droneLauncher.setPosition(1);
                 }
 
                 if (rightBumperPing & !gamepad2.right_bumper) {
@@ -160,26 +160,18 @@ public class PlayGame extends LinearOpMode {
                     leftBumperPing = true;
                 }
 
-                if (gamepad2.dpad_up) {
-                    if (elbowP < 1) {
-                        elbow1.setPosition(elbow1.getPosition() + .005);
-                        elbow2.setPosition(elbow2.getPosition() - .005);
-                        elbowP = elbowP + .005;
-                    } else {
-                        elbowP = 1;
-                    }
+                if (gamepad2.dpad_up && (elbowP < 0.99)) {
+                    elbow1.setPosition(elbow1.getPosition() + .005);
+                    elbow2.setPosition(elbow2.getPosition() - .005);
+                    elbowP = elbowP + .005;
                 }
-                if (gamepad2.dpad_down) {
-                    if (elbowP > 0) {
-                        elbow1.setPosition(elbow1.getPosition() - .005);
-                        elbow2.setPosition(elbow2.getPosition() + .005);
-                        elbowP = elbowP - .005;
-                    } else {
-                        elbowP = 0;
-                    }
+                if (gamepad2.dpad_down && (elbowP > 0.01)) {
+                    elbow1.setPosition(elbow1.getPosition() - .005);
+                    elbow2.setPosition(elbow2.getPosition() + .005);
+                    elbowP = elbowP - .005;
                 }
 
-                if (gamepad2.b) {
+                if (gamepad2.x) {
                     rightTarget = 0;
                     leftTarget = 1;
                     leftBumperPressed = true;
@@ -241,6 +233,7 @@ public class PlayGame extends LinearOpMode {
                 telemetry.addData("Main Boom Angle", angle1);
                 telemetry.addData("Jib Boom Angle", angle2);
                 telemetry.addData("AnglesAdded", abs(angle1) + angle2);
+                telemetry.addData("Elbow", elbowP);
                 telemetry.update();
             }
         }
